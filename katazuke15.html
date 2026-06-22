@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日の15分 片づけ</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: #faf8f5;
+    color: #3d3530;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 390px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ヘッダー */
+  .header {
+    padding: 28px 24px 16px;
+    text-align: center;
+  }
+  .header-sub {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #b8a89a;
+    margin-bottom: 4px;
+  }
+  .header-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3d3530;
+    letter-spacing: 0.04em;
+  }
+  .header-title span { color: #d4826a; }
+
+  /* スクリーン */
+  .screen { display: none; flex-direction: column; flex: 1; padding: 12px 20px 32px; }
+  .screen.active { display: flex; }
+
+  /* トップ画面 */
+  .top-message {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+  }
+  .top-emoji { font-size: 48px; margin-bottom: 12px; display: block; }
+  .top-message h2 {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .top-message p {
+    font-size: 13px;
+    color: #8c7b72;
+    line-height: 1.7;
+  }
+
+  /* 場所選択 */
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #b8a89a;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .place-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .place-btn {
+    position: relative;
+    background: #fff;
+    border: 2px solid #ede8e3;
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .place-btn:active { transform: scale(0.96); }
+  .place-btn.selected { border-color: #d4826a; background: #fff5f2; }
+  .place-btn .icon { display: block; margin-bottom: 8px; }
+  .place-btn .icon .place-icon-box {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .place-btn .name { font-size: 13px; font-weight: 700; color: #3d3530; }
+  .place-level-badge {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  /* タスク画面 */
+  .task-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    margin-bottom: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .task-tags { display: flex; gap: 6px; margin-bottom: 20px; }
+  .task-place-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #d4826a;
+    background: #fff5f2;
+    border-radius: 20px;
+    padding: 4px 14px;
+    display: inline-block;
+  }
+  .task-level-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #b8a89a;
+    background: #f5f1ec;
+    border-radius: 20px;
+    padding: 4px 14px;
+    display: inline-block;
+  }
+  .task-icon { font-size: 56px; margin-bottom: 16px; display: block; }
+  .task-text {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: #3d3530;
+    margin-bottom: 12px;
+    white-space: pre-line;
+  }
+  .task-hint {
+    font-size: 13px;
+    color: #8c7b72;
+    line-height: 1.6;
+    background: #faf8f5;
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+
+  /* チャレンジバー（タスク画面上部） */
+  .challenge-bar {
+    display: none;
+    background: linear-gradient(135deg, #fff5f2, #ffe6dd);
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .challenge-bar.active { display: block; }
+  .challenge-bar-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #d4826a;
+    margin-bottom: 8px;
+  }
+  .challenge-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .challenge-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #ede8e3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #b8a89a;
+  }
+  .challenge-dot.done { background: #d4826a; color: #fff; }
+  .challenge-dot.today { background: #fff; border: 2px solid #d4826a; color: #d4826a; }
+
+  /* カウンター */
+  .counter-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .counter-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ede8e3;
+    transition: background 0.3s;
+  }
+  .counter-dot.done { background: #d4826a; }
+
+  /* ボタン */
+  .btn-primary {
+    width: 100%;
+    background: #d4826a;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 18px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    margin-bottom: 10px;
+  }
+  .btn-primary:active { transform: scale(0.97); background: #c0705a; }
+  .btn-secondary {
+    width: 100%;
+    background: transparent;
+    color: #b8a89a;
+    border: none;
+    padding: 14px;
+    font-size: 13px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-levelup {
+    background: #fff;
+    color: #d4826a;
+    border: 2px solid #d4826a;
+  }
+  .btn-levelup:active { background: #fff5f2; }
+  .btn-outline {
+    width: 100%;
+    background: #fff;
+    color: #d4826a;
+    border: 2px solid #d4826a;
+    border-radius: 999px;
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+  }
+  .btn-outline:active { background: #fff5f2; }
+
+  /* 完了画面 */
+  .done-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 36px 24px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    margin-bottom: 20px;
+  }
+  .done-emoji { font-size: 64px; display: block; margin-bottom: 12px; animation: pop 0.4s ease; }
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .medal-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #fff5f2, #ffe6dd);
+    border: 2px solid #d4826a;
+    border-radius: 999px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #d4826a;
+    margin-bottom: 14px;
+    animation: pop 0.5s ease;
+  }
+  .done-count { font-size: 36px; font-weight: 700; color: #d4826a; margin-bottom: 4px; }
+  .done-count span { font-size: 16px; color: #8c7b72; font-weight: 400; }
+  .done-message { font-size: 15px; font-weight: 700; line-height: 1.7; margin-bottom: 8px; }
+  .done-sub { font-size: 13px; color: #8c7b72; line-height: 1.7; margin-bottom: 24px; }
+  .mimi-box {
+    background: #fff5f2;
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 13px;
+    color: #3d3530;
+    line-height: 1.7;
+    border-left: 3px solid #d4826a;
+    text-align: left;
+    margin-bottom: 24px;
+  }
+  .mimi-box strong { color: #d4826a; }
+  .reward-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #b8a89a;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .reward-card {
+    background: #fff5f2;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 12px;
+    border: 2px solid #f0ddd7;
+  }
+  .reward-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+  .reward-text { font-size: 15px; font-weight: 700; color: #3d3530; line-height: 1.5; }
+  .reward-shuffle {
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #d4826a;
+  }
+  .medal-badge.big {
+    font-size: 16px;
+    padding: 12px 24px;
+    animation: pop 0.5s ease, wiggle 0.6s ease 0.5s;
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-4deg); }
+    75% { transform: rotate(4deg); }
+  }
+
+  /* チャレンジ選択画面 */
+  .challenge-hero {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+  }
+  .challenge-hero-emoji { font-size: 44px; margin-bottom: 10px; display: block; }
+  .challenge-hero h2 { font-size: 17px; font-weight: 700; line-height: 1.6; margin-bottom: 6px; }
+  .challenge-hero p { font-size: 13px; color: #8c7b72; line-height: 1.7; }
+
+  .challenge-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+  .challenge-option-btn {
+    background: #fff;
+    border: 2px solid #ede8e3;
+    border-radius: 20px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    text-align: left;
+  }
+  .challenge-option-btn:active { transform: scale(0.98); }
+  .challenge-option-btn.featured { border-color: #d4826a; background: #fff5f2; }
+  .challenge-days-num {
+    font-size: 36px;
+    font-weight: 700;
+    color: #d4826a;
+    min-width: 48px;
+    text-align: center;
+  }
+  .challenge-option-info { flex: 1; }
+  .challenge-option-title { font-size: 15px; font-weight: 700; color: #3d3530; margin-bottom: 2px; }
+  .challenge-option-desc { font-size: 12px; color: #8c7b72; }
+  .challenge-option-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #d4826a;
+    background: #fff5f2;
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+  .challenge-option-btn.featured .challenge-option-badge {
+    background: #d4826a;
+    color: #fff;
+  }
+
+  /* ニックネーム入力 */
+  .nickname-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    margin-bottom: 20px;
+  }
+  .nickname-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .nickname-card p { font-size: 13px; color: #8c7b72; margin-bottom: 24px; line-height: 1.7; }
+  .nickname-input {
+    width: 100%;
+    border: 2px solid #ede8e3;
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    text-align: center;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  .nickname-input:focus { border-color: #d4826a; }
+
+  /* コミュニティ画面 */
+  .community-header {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 16px;
+  }
+  .community-header h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .community-header p { font-size: 13px; color: #8c7b72; }
+  .community-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .community-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .community-rank {
+    font-size: 20px;
+    min-width: 32px;
+    text-align: center;
+  }
+  .community-info { flex: 1; }
+  .community-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .community-meta { font-size: 11px; color: #b8a89a; margin-bottom: 6px; }
+  .progress-bar-wrap {
+    background: #f5f1ec;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #d4826a, #e8a085);
+    transition: width 0.5s ease;
+  }
+  .community-badge { font-size: 18px; }
+  .community-photo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-left: 8px;
+  }
+  .community-comment {
+    font-size: 12px;
+    color: #8c7b72;
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .community-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #b8a89a;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .community-loading { text-align: center; padding: 40px; color: #b8a89a; }
+  .community-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .community-tab {
+    flex: 1;
+    background: #fff;
+    border: 2px solid #ede8e3;
+    border-radius: 999px;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #b8a89a;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .community-tab.active { border-color: #d4826a; color: #d4826a; background: #fff5f2; }
+
+  /* 写真アップロード画面 */
+  .upload-hero {
+    background: linear-gradient(135deg, #fff5f2, #ffe6dd);
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 2px solid #f0ddd7;
+  }
+  .upload-hero-emoji { font-size: 56px; display: block; margin-bottom: 12px; animation: pop 0.4s ease; }
+  .upload-hero h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .upload-hero p { font-size: 13px; color: #8c7b72; line-height: 1.7; }
+  .upload-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .upload-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #b8a89a;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .photo-upload-area {
+    border: 2px dashed #ede8e3;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .photo-upload-area:active { border-color: #d4826a; background: #fff5f2; }
+  .photo-upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .photo-upload-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+  .photo-upload-text { font-size: 13px; color: #8c7b72; }
+  .photo-preview {
+    width: 100%;
+    border-radius: 12px;
+    max-height: 200px;
+    object-fit: cover;
+    display: none;
+    margin-bottom: 10px;
+  }
+  .comment-textarea {
+    width: 100%;
+    border: 2px solid #ede8e3;
+    border-radius: 16px;
+    padding: 14px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    resize: none;
+    height: 100px;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+  .comment-textarea:focus { border-color: #d4826a; }
+  .upload-status {
+    text-align: center;
+    font-size: 13px;
+    color: #8c7b72;
+    margin-bottom: 12px;
+    min-height: 20px;
+  }
+
+  /* 紙吹雪 */
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 999;
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -40px;
+    animation: confetti-fall linear forwards;
+  }
+  @keyframes confetti-fall {
+    to { transform: translateY(110vh) rotate(360deg); opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+<div class="confetti-container" id="confetti-container"></div>
+
+  <div class="header">
+    <div class="header-sub">頑張りすぎなくてOK ✦</div>
+    <div class="header-title">今日の<span>15分</span>、いっしょに♪</div>
+  </div>
+
+  <!-- トップ画面 -->
+  <div class="screen active" id="screen-top">
+    <div class="top-message">
+      <span class="top-emoji">☕</span>
+      <h2>完璧じゃなくていい。<br>「ごきげんな私」を目指そ♪</h2>
+      <p>1か所だけ、ちょこっとやるだけ。<br>それだけでお家の空気が変わるよ！</p>
+    </div>
+    <div class="section-label">今日はどこをやってみる？</div>
+    <div class="place-grid" id="place-grid">
+      <button class="place-btn" data-place="キッチン" onclick="selectPlace(this)">
+        <span class="place-level-badge"></span>
+        <span class="icon"><div class="place-icon-box" style="background:linear-gradient(135deg,#ffe0cc,#ffb899);">🍳</div></span>
+        <span class="name">キッチン</span>
+      </button>
+      <button class="place-btn" data-place="リビング" onclick="selectPlace(this)">
+        <span class="place-level-badge"></span>
+        <span class="icon"><div class="place-icon-box" style="background:linear-gradient(135deg,#d4ecd4,#a8d8a8);">🛋️</div></span>
+        <span class="name">リビング</span>
+      </button>
+      <button class="place-btn" data-place="クローゼット" onclick="selectPlace(this)">
+        <span class="place-level-badge"></span>
+        <span class="icon"><div class="place-icon-box" style="background:linear-gradient(135deg,#e8d5f0,#c9a8e0);">👗</div></span>
+        <span class="name">クローゼット</span>
+      </button>
+      <button class="place-btn" data-place="洗面台" onclick="selectPlace(this)">
+        <span class="place-level-badge"></span>
+        <span class="icon"><div class="place-icon-box" style="background:linear-gradient(135deg,#cce8ff,#99ccff);">🪥</div></span>
+        <span class="name">洗面台</span>
+      </button>
+      <button class="place-btn" data-place="玄関" onclick="selectPlace(this)">
+        <span class="place-level-badge"></span>
+        <span class="icon"><div class="place-icon-box" style="background:linear-gradient(135deg,#fff0cc,#ffd966);">🚪</div></span>
+        <span class="name">玄関</span>
+      </button>
+      <button class="place-btn" data-place="テーブル" onclick="selectPlace(this)">
+        <span class="place-level-badge"></span>
+        <span class="icon"><div class="place-icon-box" style="background:linear-gradient(135deg,#ffd6e0,#ffadc0);">🪑</div></span>
+        <span class="name">テーブル</span>
+      </button>
+    </div>
+    <button class="btn-primary" id="start-btn" onclick="startTask()" style="display:none; margin-top:12px;">
+      ちょっとだけやる？
+    </button>
+    <div style="display:flex; gap:10px; margin-top:8px;">
+      <button class="btn-outline" onclick="goToChallenge()" style="margin-bottom:0;">
+        🔥 チャレンジモード
+      </button>
+      <button class="btn-outline" onclick="showCommunity()" style="margin-bottom:0; border-color:#b8a89a; color:#b8a89a;">
+        👥 みんなの記録
+      </button>
+    </div>
+  </div>
+
+  <!-- ニックネーム入力画面 -->
+  <div class="screen" id="screen-nickname">
+    <div class="nickname-card">
+      <span style="font-size:44px; display:block; margin-bottom:12px;">✏️</span>
+      <h2>ニックネームを教えて！</h2>
+      <p>みんなの記録ページに<br>表示されるよ♪</p>
+      <input type="text" class="nickname-input" id="nickname-input" placeholder="例：あや、もも、Kさん" maxlength="10">
+      <button class="btn-primary" onclick="saveNickname()" style="margin-bottom:0;">決定！</button>
+    </div>
+  </div>
+
+  <!-- チャレンジ選択画面 -->
+  <div class="screen" id="screen-challenge-select">
+    <div class="challenge-hero">
+      <span class="challenge-hero-emoji">🏆</span>
+      <h2>何日間チャレンジにする？</h2>
+      <p>毎日5つのタスクをこなして<br>変化を実感しよう！</p>
+    </div>
+    <div class="challenge-options">
+      <button class="challenge-option-btn" onclick="startChallenge(3)">
+        <span class="challenge-days-num">3</span>
+        <div class="challenge-option-info">
+          <div class="challenge-option-title">3日間チャレンジ</div>
+          <div class="challenge-option-desc">まずはここから♪ 気軽にスタート</div>
+        </div>
+        <span class="challenge-option-badge">🥉 入門</span>
+      </button>
+      <button class="challenge-option-btn" onclick="startChallenge(5)">
+        <span class="challenge-days-num">5</span>
+        <div class="challenge-option-info">
+          <div class="challenge-option-title">5日間チャレンジ</div>
+          <div class="challenge-option-desc">習慣の芽が生まれる日数！</div>
+        </div>
+        <span class="challenge-option-badge">🥈 中級</span>
+      </button>
+      <button class="challenge-option-btn featured" onclick="startChallenge(7)">
+        <span class="challenge-days-num">7</span>
+        <div class="challenge-option-info">
+          <div class="challenge-option-title">7日間チャレンジ</div>
+          <div class="challenge-option-desc">本気モード！暮らしが変わる🔥</div>
+        </div>
+        <span class="challenge-option-badge">🥇 上級</span>
+      </button>
+    </div>
+    <button class="btn-secondary" onclick="switchScreen('screen-top')">もどる</button>
+  </div>
+
+  <!-- タスク画面 -->
+  <div class="screen" id="screen-task">
+    <div class="challenge-bar" id="challenge-bar">
+      <div class="challenge-bar-title" id="challenge-bar-title">3日間チャレンジ</div>
+      <div class="challenge-dots" id="challenge-dots"></div>
+    </div>
+    <div class="task-card">
+      <div class="task-tags">
+        <span class="task-place-tag" id="task-place-tag">キッチン</span>
+        <span class="task-level-tag" id="task-level-tag">🥉 Lv.1</span>
+      </div>
+      <span class="task-icon" id="task-icon">✨</span>
+      <div class="task-text" id="task-text">タスクが入ります</div>
+      <div class="task-hint" id="task-hint">ヒントが入ります</div>
+    </div>
+    <div class="counter-row" id="counter-row"></div>
+    <button class="btn-primary" onclick="taskDone()">できた！✓</button>
+    <button class="btn-secondary" onclick="skipTask()">今日はこれでおしまい</button>
+  </div>
+
+  <!-- 完了画面 -->
+  <div class="screen" id="screen-done">
+    <div class="done-card">
+      <span class="done-emoji">🎉</span>
+      <div class="medal-badge" id="medal-badge">🥉 ちょこっとメダル ゲット！</div>
+      <div class="done-count" id="done-count">5 <span>個できた！</span></div>
+      <div class="done-message" id="done-message">今日もよくやった、私！</div>
+      <div class="done-sub">おつかれさまでした〜☕</div>
+      <div class="mimi-box" id="mimi-message">
+        <strong>mimiより♪</strong><br>
+        ちょっとだけでも、やった自分を褒めてあげてね。お家の空気、変わったはずだよ！
+      </div>
+      <div class="reward-label">がんばった自分へ、今日のご褒美🎁</div>
+      <div class="reward-card">
+        <div class="reward-icon" id="reward-icon">🍺</div>
+        <div class="reward-text" id="reward-text">ビールでも飲んじゃおう！</div>
+      </div>
+      <button class="btn-secondary reward-shuffle" onclick="shuffleReward()">🎲 他のご褒美を見る</button>
+    </div>
+    <div id="challenge-done-section" style="display:none;">
+      <div style="background:#fff5f2; border-radius:20px; padding:20px; text-align:center; margin-bottom:16px; border:2px solid #f0ddd7;">
+        <div style="font-size:13px; font-weight:700; color:#d4826a; margin-bottom:8px;" id="challenge-progress-text"></div>
+        <div class="challenge-dots" id="challenge-dots-done" style="justify-content:center;"></div>
+      </div>
+      <button class="btn-primary" id="challenge-continue-btn" onclick="continueChallenge()" style="display:none;">明日も続ける！</button>
+      <button class="btn-primary" id="challenge-finish-btn" onclick="goToUpload()" style="display:none; background:linear-gradient(135deg, #d4826a, #e8956b);">🏆 チャレンジ完了！写真を送る</button>
+    </div>
+    <button class="btn-primary btn-levelup" id="level-up-btn" onclick="levelUp()" style="display:none;">🥈 なかなかメダルに挑戦する？</button>
+    <button class="btn-primary" onclick="restart()">もう1か所やってみる？</button>
+    <button class="btn-secondary" onclick="restart()">最初にもどる</button>
+  </div>
+
+  <!-- コミュニティ画面 -->
+  <div class="screen" id="screen-community">
+    <div class="community-header">
+      <h2>👥 みんなの記録</h2>
+      <p>一緒に頑張っている仲間の進捗だよ♪</p>
+    </div>
+    <div class="community-tabs">
+      <button class="community-tab active" onclick="filterCommunity('all', this)">すべて</button>
+      <button class="community-tab" onclick="filterCommunity('3', this)">3日間</button>
+      <button class="community-tab" onclick="filterCommunity('5', this)">5日間</button>
+      <button class="community-tab" onclick="filterCommunity('7', this)">7日間</button>
+    </div>
+    <div class="community-list" id="community-list">
+      <div class="community-loading">読み込み中…</div>
+    </div>
+    <button class="btn-secondary" onclick="switchScreen('screen-top')">もどる</button>
+  </div>
+
+  <!-- 写真・コメント送信画面 -->
+  <div class="screen" id="screen-upload">
+    <div class="upload-hero">
+      <span class="upload-hero-emoji">🏆</span>
+      <h2 id="upload-title">チャレンジ達成！</h2>
+      <p>やり切った自分を褒めてあげて♪<br>写真とひとことを送ってね！</p>
+    </div>
+    <div class="upload-card">
+      <span class="upload-label">📸 片づけ後の写真（任意）</span>
+      <div class="photo-upload-area" id="photo-upload-area">
+        <input type="file" accept="image/*" id="photo-file-input" onchange="previewPhoto(this)">
+        <span class="photo-upload-icon">📷</span>
+        <div class="photo-upload-text">タップして写真を選ぶ</div>
+      </div>
+      <img id="photo-preview" class="photo-preview" alt="プレビュー">
+    </div>
+    <div class="upload-card">
+      <span class="upload-label">💬 ひとこと（必須）</span>
+      <textarea class="comment-textarea" id="comment-input" placeholder="チャレンジを終えての感想、変化を感じたこと、なんでもOK♪"></textarea>
+    </div>
+    <div class="upload-status" id="upload-status"></div>
+    <button class="btn-primary" onclick="submitReport()">送る 🌸</button>
+    <button class="btn-secondary" onclick="skipUpload()">今回はスキップ</button>
+  </div>
+
+</div>
+
+<script>
+/* ========== データ ========== */
+const tasks = {
+  キッチン: {
+    1: [
+      { icon: "🧴", text: "シンクまわりの洗剤を\nひとまとめにする", hint: "向きを揃えるだけでも◎" },
+      { icon: "🗂️", text: "引き出しを1つ開けて\n1つだけ出す", hint: "「いつか使う」は今日手放して" },
+      { icon: "🧽", text: "コンロまわりを\nさっと拭く", hint: "30秒でOK！ぴかっとするよ" },
+      { icon: "🧊", text: "冷蔵庫の上を\nさらっと整理", hint: "のせてるものを一度全部おろしてみて" },
+      { icon: "☕", text: "マグカップを\n3つだけ残して見直す", hint: "本当によく使うのはどれかな？" },
+    ],
+    2: [
+      { icon: "🧂", text: "調味料の引き出しを\n並べ替える", hint: "よく使うものを手前に集めよう" },
+      { icon: "🪣", text: "シンク下を覗いて\n1つ整理", hint: "1個出してみるだけでOK" },
+      { icon: "🍽️", text: "食器棚の1段を\n見直す", hint: "重ねすぎてるところから始めよう" },
+      { icon: "📦", text: "ラップ・アルミホイル類を\nひとまとめにする", hint: "立てて収納するとさらに◎" },
+      { icon: "🍲", text: "鍋のフタを\n重ねて収納し直す", hint: "サイズごとに並べるとすっきり" },
+    ],
+    3: [
+      { icon: "🥄", text: "使ってない調理器具を\n1つ手放す", hint: "1年触ってないなら、もう大丈夫" },
+      { icon: "🧴", text: "賞味期限切れの調味料を\n1つ処分", hint: "見つけたらラッキー、くらいの気持ちで" },
+      { icon: "🔪", text: "重複してる調理グッズを\n1つ手放す", hint: "同じようなもの、2つもいらないかも" },
+      { icon: "🍱", text: "使っていない弁当箱・タッパーを\n1つ手放す", hint: "フタとセットじゃないものから" },
+      { icon: "📋", text: "ストック食品の\n消費期限を1つチェック", hint: "気になってたあれ、確認してみよう" },
+    ],
+    4: [
+      { icon: "✨", text: "シンク下の引き出し\n1段を完全リセット", hint: "全部出して、必要なものだけ戻す" },
+      { icon: "🍽️", text: "食器棚の1段を\n全部出して並べ直す", hint: "使う頻度で配置を見直そう" },
+      { icon: "🗑️", text: "ゴミ箱周りを\n徹底的に整える", hint: "袋のストックも一緒に整理" },
+      { icon: "🧺", text: "キッチンカウンターを\n完全リセット", hint: "何もない状態を一度作ってみよう" },
+      { icon: "📸", text: "調味料ラックを\n写真映えするように整える", hint: "ラベルの向きを揃えるだけでも変わるよ" },
+    ],
+  },
+  リビング: {
+    1: [
+      { icon: "📚", text: "テーブルの上の本を\n1か所にまとめる", hint: "重ねるだけでOK！" },
+      { icon: "🎮", text: "リモコンを\n定位置に戻す", hint: "これだけでぐっとすっきり" },
+      { icon: "🧺", text: "床にあるものを\nひとまとめにする", hint: "拾うだけ、しまわなくてもOK" },
+      { icon: "🪟", text: "カーテンを整えて\n光を入れる", hint: "気持ちまで明るくなるよ" },
+      { icon: "🛋️", text: "クッションを\nふかふかに整える", hint: "ぱんぱんってするだけで部屋が変わる！" },
+    ],
+    2: [
+      { icon: "🧹", text: "ソファの下を\n掃除機でひと拭き", hint: "意外なものが出てくるかも！" },
+      { icon: "📖", text: "本棚の1段を\nざっくり整理", hint: "読んでないものを手前に出すだけでOK" },
+      { icon: "🔌", text: "テレビ周りのコードを\nまとめる", hint: "結束バンドがなければテープでも" },
+      { icon: "🌿", text: "観葉植物の葉を\n拭いてあげる", hint: "濡れたティッシュでOK" },
+      { icon: "📦", text: "収納ボックスを\n1つ中身確認", hint: "開けるだけでもOK" },
+    ],
+    3: [
+      { icon: "🗑️", text: "「なんとなく置いてるもの」を\n1つ手放す", hint: "2週間触っていないなら手放しどき" },
+      { icon: "📰", text: "古い雑誌・新聞を\nまとめて処分準備", hint: "束ねるだけでOK" },
+      { icon: "📚", text: "読んでいない本を\n3冊選ぶ", hint: "手放すかどうかは後で決めていい" },
+      { icon: "🖼️", text: "飾り物を見直して\n1つ減らす", hint: "「好き」じゃなくなったものは出番終わり" },
+      { icon: "🧸", text: "使っていないグッズを\n1つ手放す", hint: "思い切り、後で後悔しないやつから" },
+    ],
+    4: [
+      { icon: "✨", text: "リビング全体を\nリセットする", hint: "全部定位置に戻して、ゼロから始めよう" },
+      { icon: "🗄️", text: "棚を1か所\n全部出して並べ直す", hint: "使う頻度順に並べ直そう" },
+      { icon: "🪵", text: "ラグに掃除機をかけて\nふわっとさせる", hint: "端っこまでしっかり" },
+      { icon: "💡", text: "照明まわりの\nほこりを払う", hint: "部屋が明るく見えるようになるよ" },
+      { icon: "📸", text: "「理想のリビング」に近づける\n1アクションをやる", hint: "ピンタレストを見てから決めてもOK" },
+    ],
+  },
+  クローゼット: {
+    1: [
+      { icon: "👔", text: "ハンガーの向きを\n全部同じにする", hint: "これだけで見違えるよ" },
+      { icon: "👗", text: "1年着ていない服を\n3枚出す", hint: "ゴミ袋に入れなくていい、出すだけ" },
+      { icon: "🧦", text: "靴下・下着を\nざっくり分ける", hint: "引き出しの中、ぐちゃでOK！" },
+      { icon: "👜", text: "バッグの中を\n1つだけ整理", hint: "レシートだけ出してみて" },
+      { icon: "🎁", text: "「なんとなく置いてる」箱を\n1つ開けてみる", hint: "中身確認するだけでOK" },
+    ],
+    2: [
+      { icon: "🧥", text: "季節外れの服を\n奥にまとめる", hint: "冬物・夏物で分けるだけでOK" },
+      { icon: "👚", text: "畳んで収納してる服を\n1か所整える", hint: "崩れてるところから手をつけよう" },
+      { icon: "🧶", text: "同じ種類のアイテムを\nまとめる", hint: "ニットはニット同士" },
+      { icon: "🪝", text: "空のハンガーを\n取り除く", hint: "まとめてクローゼット外へ" },
+      { icon: "👜", text: "バッグを\n形ごとに並べ直す", hint: "大→小で並べるとぐっとすっきり" },
+    ],
+    3: [
+      { icon: "🤔", text: "「なんとなく残してる服」を\n3枚選ぶ", hint: "着ていない理由があるはず" },
+      { icon: "📏", text: "サイズが合わなくなった服を\n出す", hint: "「いつか痩せたら」は今日お別れ" },
+      { icon: "👜", text: "使っていないバッグを\n1つ手放す", hint: "1年使わなかったなら手放そう" },
+      { icon: "💍", text: "アクセサリーを整理して\n使わないものを出す", hint: "からまってるものから解いてみよう" },
+      { icon: "🧣", text: "マフラー・ストールの\n重複を見直す", hint: "似たようなのが2枚あったら1枚でいい" },
+    ],
+    4: [
+      { icon: "✨", text: "クローゼット1段を\n完全リセット", hint: "全部出して、よく使うものだけ戻す" },
+      { icon: "🌀", text: "全ての服を\n1度ハンガーから外して見直す", hint: "手に取って「好き」と思えるか確認" },
+      { icon: "🌸", text: "「ときめかない服」を\n5枚以上出す", hint: "ときめきは正直だよ。信じて！" },
+      { icon: "📦", text: "収納ケースを\n全部引き出して確認", hint: "何が入ってたか忘れてるものがあるはず" },
+      { icon: "🌙", text: "翌朝のコーデを決めて\nクローゼットを閉じる", hint: "決めておくと朝がラクになるよ♪" },
+    ],
+  },
+  洗面台: {
+    1: [
+      { icon: "💄", text: "化粧品を\n種類ごとに分ける", hint: "スキンケアとメイクを分けるだけ◎" },
+      { icon: "🪥", text: "歯ブラシ周りを\nさっと拭く", hint: "清潔感がぐっとアップ！" },
+      { icon: "🧴", text: "詰め替え待ちの\nストックを確認", hint: "ないものをメモするだけでOK" },
+      { icon: "💊", text: "薬箱を\n開けて見直す", hint: "期限切れがないか確認してみよう" },
+      { icon: "🪞", text: "鏡を\nさっと拭く", hint: "くもりがとれると気持ちいい！" },
+    ],
+    2: [
+      { icon: "🗄️", text: "引き出しを\n1つ整理する", hint: "全部出さなくていい、並べ替えるだけ" },
+      { icon: "🛁", text: "タオルを\n畳み直して収納", hint: "縦に並べると取り出しやすいよ" },
+      { icon: "🧪", text: "使いかけの試供品を\nまとめる", hint: "小袋をひとつのポーチにまとめよう" },
+      { icon: "🪣", text: "洗面台下を開けて\n1つ整理", hint: "掃除道具をまとめるだけでもOK" },
+      { icon: "💨", text: "ドライヤーコードを\nすっきりまとめる", hint: "くるっと束ねるだけで見違える" },
+    ],
+    3: [
+      { icon: "💄", text: "使っていないコスメを\n3つ手放す", hint: "色が合わなかったもの、正直に手放して" },
+      { icon: "⏰", text: "期限切れの化粧品を\n確認して処分", hint: "マスカラは3か月、リップは1年が目安" },
+      { icon: "🧴", text: "重複しているスキンケアを\n整理", hint: "同じ用途のものが2つ以上ある？" },
+      { icon: "🧹", text: "洗面台下の掃除用品を\n見直す", hint: "古いスポンジや洗剤の処分どき" },
+      { icon: "🛒", text: "「なんとなく置いてる」ボトル類を\n整理", hint: "使ってないものは潔く手放そう" },
+    ],
+    4: [
+      { icon: "✨", text: "洗面台下を\n全部出してリセット", hint: "全部出して拭いてから戻すだけ" },
+      { icon: "💅", text: "化粧品を全部出して\n必要なものだけ戻す", hint: "毎日使うものを手前に集めよう" },
+      { icon: "🛁", text: "タオル類を全部見直して\n古いものを処分", hint: "毛羽立ってきたら卒業のサイン" },
+      { icon: "🪞", text: "洗面台まわりを\n徹底的に拭き掃除", hint: "蛇口・鏡・棚、全部ぴかぴかに" },
+      { icon: "🌸", text: "「毎朝気持ちいい」洗面台に\n1か所変える", hint: "好きな香りを置くだけでも全然違う" },
+    ],
+  },
+  玄関: {
+    1: [
+      { icon: "👟", text: "出しっぱなしの靴を\nしまう", hint: "1足だけでもOK！" },
+      { icon: "🌂", text: "傘を\n整理する", hint: "壊れてるのがあったら捨てちゃおう" },
+      { icon: "🗝️", text: "鍵・カギ周りを\nさっと片づける", hint: "定位置を決めるだけで毎朝楽になる" },
+      { icon: "🎒", text: "バッグを\n定位置に戻す", hint: "ひっかけるだけでもOK" },
+      { icon: "🪴", text: "玄関をさっと\n掃き掃除", hint: "入ってきた時の気持ちが変わるよ" },
+    ],
+    2: [
+      { icon: "👞", text: "靴箱を\n1段整理する", hint: "よく履くものを取り出しやすい高さに" },
+      { icon: "🧥", text: "コート・上着を\n定位置にかける", hint: "フックを1本増やすだけでも変わるよ" },
+      { icon: "🚿", text: "玄関マットを\n干す・掃除機をかける", hint: "週1でやるとお家全体がきれいに見える" },
+      { icon: "☂️", text: "傘立てを\nすっきり整理する", hint: "1本ずつ状態を確認してみよう" },
+      { icon: "🔑", text: "鍵・印鑑の\n定位置を決める", hint: "フックひとつで朝の「ない！」がなくなる" },
+    ],
+    3: [
+      { icon: "👟", text: "履いていない靴を\n3足選ぶ", hint: "1年履かなかったら手放しどき" },
+      { icon: "🌸", text: "シーズンオフの靴を\n靴箱の奥へ", hint: "今の季節に合う靴を手前に出そう" },
+      { icon: "🗑️", text: "壊れた傘・古い傘を\n処分する", hint: "骨が折れてるものは迷わず手放して" },
+      { icon: "🗝️", text: "使っていない鍵・ストラップを\n整理", hint: "何の鍵かわからないものは処分OK" },
+      { icon: "📬", text: "玄関に溜まった\n「持って行き忘れ」を片づける", hint: "返すもの・送るものをまとめて定位置に" },
+    ],
+    4: [
+      { icon: "✨", text: "靴箱を\n全部出してリセット", hint: "全部出して中を拭いてから戻す" },
+      { icon: "🪟", text: "玄関扉・小窓を\n拭いてぴかぴかに", hint: "外側も拭けたら最高！" },
+      { icon: "👠", text: "大切な靴を\n磨く・クリームを塗る", hint: "手入れした靴は長持ちするよ" },
+      { icon: "🌿", text: "玄関に\nよい香りを置く", hint: "ディフューザーでも小さな植物でも" },
+      { icon: "💛", text: "帰ってきた自分が\n嬉しくなる玄関に整える", hint: "「ただいま」が言いたくなる場所にしよう" },
+    ],
+  },
+  テーブル: {
+    1: [
+      { icon: "📝", text: "紙類を\nひとまとめにする", hint: "見直さなくていい、まとめるだけ！" },
+      { icon: "✏️", text: "ペンを\n1か所に集める", hint: "書けないペンがあったら捨てよう" },
+      { icon: "☕", text: "使いかけのコップを\nキッチンに戻す", hint: "これだけでテーブルが広くなる" },
+      { icon: "🧴", text: "テーブルを\nさっと拭く", hint: "ウェットシートでOK！" },
+      { icon: "📱", text: "充電コードを\nまとめる", hint: "くるっと束ねるだけでスッキリ" },
+    ],
+    2: [
+      { icon: "🗂️", text: "引き出しを\n1つ整理する", hint: "中身を全部出さなくていい、並べ直すだけ" },
+      { icon: "📄", text: "書類を\n種類ごとに分ける", hint: "「確認待ち」「保管」「処分」の3つに" },
+      { icon: "✏️", text: "使っていない文具を\n1つ処分", hint: "インク切れのペン、まだ持ってない？" },
+      { icon: "🧺", text: "テーブルクロスを\n洗う・取り替える", hint: "新しいものに替えると気分もリフレッシュ" },
+      { icon: "📦", text: "「なんとなく置いてる」ものを\n定位置へ", hint: "テーブルに置いていいのは何かな？" },
+    ],
+    3: [
+      { icon: "📋", text: "「未処理の書類」を\n1つ片づける", hint: "電話1本・メール1通で解決するやつから" },
+      { icon: "📚", text: "読んでいない本・雑誌を\n3冊選ぶ", hint: "読む気が戻らないなら手放しどき" },
+      { icon: "🖊️", text: "使っていない文具を\nまとめて処分", hint: "ペン立てのぱんぱん、一度全部出してみて" },
+      { icon: "📌", text: "テーブルに置いていいものの\nルールを決める", hint: "「出しっぱOKなもの3つ」だけ決めよう" },
+      { icon: "🗃️", text: "「仮置きゾーン」を\n1か所決める", hint: "ここに置いたものは週1で見直す場所" },
+    ],
+    4: [
+      { icon: "✨", text: "テーブルを\n完全リセット", hint: "何も置かない状態を一度つくってみよう" },
+      { icon: "🗂️", text: "引き出しを\n全部出して整理", hint: "全部出して、いるもの・いらないものを分けよう" },
+      { icon: "📄", text: "書類を全部見直して\n不要なものを処分", hint: "「なんとなく取ってある紙」を手放そう" },
+      { icon: "🪑", text: "テーブルまわりの収納を\n全部見直す", hint: "テーブルの上がすっきりすると暮らしが変わる" },
+      { icon: "📸", text: "「理想のテーブル」の状態を\n写真に撮る", hint: "次また散らかってきたら見返そう♪" },
+    ],
+  },
+};
+
+const medals = {
+  1: { icon: "🥉", name: "ちょこっとメダル" },
+  2: { icon: "🥈", name: "なかなかメダル" },
+  3: { icon: "🥇", name: "すごいメダル" },
+  4: { icon: "👑", name: "ごきげんメダル" },
+};
+
+const doneMessages = [
+  ["すごい！！やったじゃん！", "完璧じゃなくていい。\nやった自分を思いっきり褒めてね✨"],
+  ["おー！！できてる！！", "ちょっとやるだけで、\nお家の空気って変わるんだよね♪"],
+  ["さすが！！！", "続けることより、\n今日やれたことが大事だよ！"],
+];
+
+const mimiMessages = [
+  "ちょっとだけでも、やった自分を褒めてあげてね。お家の空気、変わったはずだよ！",
+  "完璧じゃなくていい。今日の「やった」が、明日の私をちょっとラクにしてくれるよ♪",
+  "片づけって、お家を整えることじゃなくて、自分の気持ちを整えることだと思う。今日もよかった！",
+  "一歩だけ前に進めたね。それで十分！ゆっくりやっていこう♪",
+  "今日できたこと、ちゃんと覚えておいてね。あなたはちゃんとやれてるよ！",
+];
+
+const rewards = [
+  { icon: "🍺", text: "ビールでも飲んじゃおう！" },
+  { icon: "🎬", text: "映画鑑賞、決定！" },
+  { icon: "🍘", text: "おせんべい、ぼりぼりしよ♪" },
+  { icon: "🍶", text: "居酒屋メニューで晩酌タイム！" },
+  { icon: "👯", text: "友達呼んじゃおう！" },
+  { icon: "☕", text: "コーヒータイム、いただき！" },
+  { icon: "🛁", text: "ゆっくりお風呂、絶対入って♪" },
+  { icon: "🍫", text: "チョコ、解禁！えらい！" },
+  { icon: "🍦", text: "アイス食べよ😋 最高！" },
+  { icon: "📺", text: "好きなドラマ一気見しよ！" },
+  { icon: "💤", text: "早めに寝る！それが一番！" },
+  { icon: "🛍️", text: "ちょっとだけネットショッピング♪" },
+];
+
+/* ========== Supabase ========== */
+let sbClient = null;
+
+function initSupabase() {
+  try {
+    const url = window.APP_CONFIG?.SUPABASE_URL;
+    const key = window.APP_CONFIG?.SUPABASE_ANON_KEY;
+    if (url && key) {
+      sbClient = supabase.createClient(url, key);
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+/* ========== localStorage ========== */
+const LEVELS_KEY = "katazuke15_levels";
+const CHALLENGE_KEY = "katazuke15_challenge";
+const NICK_KEY = "tk_nick";
+
+function loadLevels() {
+  try { return JSON.parse(localStorage.getItem(LEVELS_KEY)); } catch(e) { return null; }
+}
+function saveLevels() {
+  try { localStorage.setItem(LEVELS_KEY, JSON.stringify(levelByPlace)); } catch(e) {}
+}
+function loadChallenge() {
+  try { return JSON.parse(localStorage.getItem(CHALLENGE_KEY)); } catch(e) { return null; }
+}
+function saveChallenge(data) {
+  try { localStorage.setItem(CHALLENGE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+function clearChallenge() {
+  localStorage.removeItem(CHALLENGE_KEY);
+}
+function getNickname() {
+  return localStorage.getItem(NICK_KEY) || "";
+}
+function setNickname(n) {
+  localStorage.setItem(NICK_KEY, n);
+}
+
+/* ========== 通常モード状態 ========== */
+let levelByPlace = {};
+Object.keys(tasks).forEach(p => levelByPlace[p] = 1);
+const _savedLevels = loadLevels();
+if (_savedLevels) Object.keys(tasks).forEach(p => { if (_savedLevels[p]) levelByPlace[p] = _savedLevels[p]; });
+
+let currentPlace = "";
+let currentLevel = 1;
+let taskQueue = [];
+let doneCount = 0;
+let currentTaskIndex = 0;
+let lastRewardIdx = -1;
+
+/* ========== チャレンジ状態 ========== */
+let challengeMode = false;
+let challengeTotalDays = 0;
+let challengeDaysDone = 0;
+let challengeRecordId = null;
+let pendingChallengeAfterNick = null;
+
+/* ========== 通常モード関数 ========== */
+function selectPlace(btn) {
+  document.querySelectorAll(".place-btn").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  currentPlace = btn.dataset.place;
+  document.getElementById("start-btn").style.display = "block";
+}
+
+function startTask() {
+  if (!currentPlace) return;
+  challengeMode = false;
+  currentLevel = levelByPlace[currentPlace];
+  const levelTasks = tasks[currentPlace][currentLevel] || tasks[currentPlace][1];
+  taskQueue = [...levelTasks].sort(() => Math.random() - 0.5);
+  currentTaskIndex = 0;
+  doneCount = 0;
+  document.getElementById("challenge-bar").classList.remove("active");
+  showTask();
+  switchScreen("screen-task");
+}
+
+function showTask() {
+  const t = taskQueue[currentTaskIndex % taskQueue.length];
+  const medal = medals[currentLevel];
+  document.getElementById("task-place-tag").textContent = currentPlace;
+  document.getElementById("task-level-tag").textContent = `${medal.icon} Lv.${currentLevel}`;
+  document.getElementById("task-icon").textContent = t.icon;
+  document.getElementById("task-text").textContent = t.text;
+  document.getElementById("task-hint").textContent = t.hint;
+  updateCounter();
+}
+
+function updateCounter() {
+  const row = document.getElementById("counter-row");
+  row.innerHTML = "";
+  for (let i = 0; i < 5; i++) {
+    const d = document.createElement("div");
+    d.className = "counter-dot" + (i < doneCount ? " done" : "");
+    row.appendChild(d);
+  }
+}
+
+function taskDone() {
+  doneCount++;
+  currentTaskIndex++;
+  if (doneCount >= 5) { showDone(); return; }
+  showTask();
+}
+
+function skipTask() { showDone(); }
+
+function showDone() {
+  const idx = Math.min(doneCount - 1, doneMessages.length - 1);
+  const msgs = doneMessages[Math.max(0, idx)] || doneMessages[0];
+  document.getElementById("done-count").innerHTML = `${doneCount} <span>個できた！</span>`;
+  document.getElementById("done-message").textContent = msgs[0];
+
+  const mimiMsg = mimiMessages[Math.floor(Math.random() * mimiMessages.length)];
+  document.getElementById("mimi-message").innerHTML = `<strong>mimiより♪</strong><br>${mimiMsg}`;
+
+  const medal = medals[currentLevel];
+  const medalBadge = document.getElementById("medal-badge");
+  const maxLevel = Object.keys(tasks[currentPlace]).length;
+  const nextLevel = currentLevel + 1;
+  const levelUpBtn = document.getElementById("level-up-btn");
+
+  if (doneCount >= 5 && currentLevel === maxLevel && maxLevel > 1) {
+    medalBadge.textContent = `${medal.icon} ${medal.name} ゲット！🏆 達人だね！`;
+    medalBadge.classList.add("big");
+    celebrate(50);
+  } else if (doneCount >= 5) {
+    medalBadge.textContent = `${medal.icon} ${medal.name} ゲット！`;
+    medalBadge.classList.remove("big");
+    celebrate(18);
+  } else {
+    medalBadge.textContent = `${medal.icon} ${medal.name}`;
+    medalBadge.classList.remove("big");
+  }
+
+  if (!challengeMode && doneCount >= 5 && tasks[currentPlace][nextLevel]) {
+    const nextMedal = medals[nextLevel];
+    levelUpBtn.textContent = `${nextMedal.icon} ${nextMedal.name}に挑戦する？`;
+    levelUpBtn.style.display = "block";
+  } else {
+    levelUpBtn.style.display = "none";
+  }
+
+  // チャレンジ関連セクション
+  const challengeSection = document.getElementById("challenge-done-section");
+  if (challengeMode && doneCount >= 5) {
+    challengeSection.style.display = "block";
+    challengeDaysDone++;
+    updateChallengeInSupabase();
+    saveChallengeLocal();
+    renderChallengeDots("challenge-dots-done");
+
+    const pt = document.getElementById("challenge-progress-text");
+    const continuBtn = document.getElementById("challenge-continue-btn");
+    const finishBtn = document.getElementById("challenge-finish-btn");
+
+    if (challengeDaysDone >= challengeTotalDays) {
+      pt.textContent = `🎉 ${challengeTotalDays}日間チャレンジ、完全達成！`;
+      continuBtn.style.display = "none";
+      finishBtn.style.display = "block";
+      celebrate(60);
+    } else {
+      pt.textContent = `${challengeDaysDone}日目 完了！あと${challengeTotalDays - challengeDaysDone}日！`;
+      continuBtn.style.display = "block";
+      finishBtn.style.display = "none";
+    }
+  } else {
+    challengeSection.style.display = "none";
+  }
+
+  shuffleReward();
+  switchScreen("screen-done");
+}
+
+function levelUp() {
+  levelByPlace[currentPlace] = currentLevel + 1;
+  saveLevels();
+  celebrate(30);
+  startTask();
+}
+
+function shuffleReward() {
+  let idx;
+  do { idx = Math.floor(Math.random() * rewards.length); } while (idx === lastRewardIdx);
+  lastRewardIdx = idx;
+  const r = rewards[idx];
+  document.getElementById("reward-icon").textContent = r.icon;
+  document.getElementById("reward-text").textContent = r.text;
+}
+
+function updatePlaceBadges() {
+  document.querySelectorAll(".place-btn").forEach(btn => {
+    const place = btn.dataset.place;
+    const lvl = levelByPlace[place];
+    const badge = btn.querySelector(".place-level-badge");
+    if (badge) badge.textContent = lvl > 1 ? medals[lvl].icon : "";
+  });
+}
+
+function restart() {
+  challengeMode = false;
+  currentPlace = "";
+  doneCount = 0;
+  document.querySelectorAll(".place-btn").forEach(b => b.classList.remove("selected"));
+  document.getElementById("start-btn").style.display = "none";
+  updatePlaceBadges();
+  switchScreen("screen-top");
+}
+
+/* ========== チャレンジ関数 ========== */
+function goToChallenge() {
+  // 進行中のチャレンジがあれば再開
+  const saved = loadChallenge();
+  if (saved && saved.daysDone < saved.totalDays) {
+    const resume = confirm(`「${saved.place}」の${saved.totalDays}日間チャレンジが進行中です（${saved.daysDone}日完了）。続けますか？`);
+    if (resume) {
+      challengeMode = true;
+      challengeTotalDays = saved.totalDays;
+      challengeDaysDone = saved.daysDone;
+      challengeRecordId = saved.id;
+      currentPlace = saved.place;
+      startChallengeTask();
+      return;
+    } else {
+      clearChallenge();
+    }
+  }
+  switchScreen("screen-challenge-select");
+}
+
+function startChallenge(days) {
+  challengeTotalDays = days;
+  const nick = getNickname();
+  if (!nick) {
+    pendingChallengeAfterNick = days;
+    document.getElementById("nickname-input").value = "";
+    switchScreen("screen-nickname");
+    return;
+  }
+  // 場所が未選択なら選択を促す
+  if (!currentPlace) {
+    alert("まず場所を選んでください！トップ画面で場所を選んでから「チャレンジモード」を押してね♪");
+    switchScreen("screen-top");
+    return;
+  }
+  beginChallenge(days, nick);
+}
+
+function saveNickname() {
+  const input = document.getElementById("nickname-input").value.trim();
+  if (!input) { alert("ニックネームを入力してね！"); return; }
+  setNickname(input);
+  if (pendingChallengeAfterNick) {
+    const days = pendingChallengeAfterNick;
+    pendingChallengeAfterNick = null;
+    if (!currentPlace) {
+      switchScreen("screen-top");
+      alert("場所を選んでから「チャレンジモード」を押してね♪");
+      return;
+    }
+    beginChallenge(days, input);
+  }
+}
+
+async function beginChallenge(days, nickname) {
+  challengeMode = true;
+  challengeTotalDays = days;
+  challengeDaysDone = 0;
+  challengeRecordId = null;
+
+  // Supabaseに記録を作成
+  if (sbClient) {
+    try {
+      const { data, error } = await sbClient
+        .from("challenge_records")
+        .insert({ nickname, challenge_days: days, place: currentPlace, days_done: 0 })
+        .select()
+        .single();
+      if (!error && data) challengeRecordId = data.id;
+    } catch(e) {}
+  }
+
+  saveChallengeLocal();
+  startChallengeTask();
+}
+
+function startChallengeTask() {
+  currentLevel = levelByPlace[currentPlace];
+  const levelTasks = tasks[currentPlace][currentLevel] || tasks[currentPlace][1];
+  taskQueue = [...levelTasks].sort(() => Math.random() - 0.5);
+  currentTaskIndex = 0;
+  doneCount = 0;
+
+  // チャレンジバーを表示
+  const bar = document.getElementById("challenge-bar");
+  bar.classList.add("active");
+  document.getElementById("challenge-bar-title").textContent = `${challengeTotalDays}日間チャレンジ`;
+  renderChallengeDots("challenge-dots");
+
+  showTask();
+  switchScreen("screen-task");
+}
+
+function continueChallenge() {
+  startChallengeTask();
+}
+
+function renderChallengeDots(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = "";
+  for (let i = 1; i <= challengeTotalDays; i++) {
+    const dot = document.createElement("div");
+    if (i <= challengeDaysDone) {
+      dot.className = "challenge-dot done";
+      dot.textContent = "✓";
+    } else if (i === challengeDaysDone + 1) {
+      dot.className = "challenge-dot today";
+      dot.textContent = i;
+    } else {
+      dot.className = "challenge-dot";
+      dot.textContent = i;
+    }
+    container.appendChild(dot);
+  }
+}
+
+function saveChallengeLocal() {
+  saveChallenge({
+    id: challengeRecordId,
+    totalDays: challengeTotalDays,
+    daysDone: challengeDaysDone,
+    place: currentPlace,
+    nickname: getNickname(),
+  });
+}
+
+async function updateChallengeInSupabase() {
+  if (!sbClient || !challengeRecordId) return;
+  try {
+    await sbClient
+      .from("challenge_records")
+      .update({
+        days_done: challengeDaysDone,
+        is_completed: challengeDaysDone >= challengeTotalDays,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", challengeRecordId);
+  } catch(e) {}
+}
+
+/* ========== コミュニティ ========== */
+let communityData = [];
+let communityFilter = "all";
+
+async function showCommunity() {
+  switchScreen("screen-community");
+  document.getElementById("community-list").innerHTML = '<div class="community-loading">読み込み中…</div>';
+
+  if (!sbClient) {
+    document.getElementById("community-list").innerHTML = '<div class="community-empty">Supabaseの設定が必要です。<br>js/config.js を確認してね。</div>';
+    return;
+  }
+
+  try {
+    const { data, error } = await sbClient
+      .from("challenge_records")
+      .select("*")
+      .order("days_done", { ascending: false })
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    communityData = data || [];
+    renderCommunity();
+  } catch(e) {
+    document.getElementById("community-list").innerHTML = '<div class="community-empty">データを取得できませんでした。</div>';
+  }
+}
+
+function filterCommunity(filter, btn) {
+  communityFilter = filter;
+  document.querySelectorAll(".community-tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  renderCommunity();
+}
+
+function renderCommunity() {
+  const list = document.getElementById("community-list");
+  let filtered = communityData;
+  if (communityFilter !== "all") {
+    filtered = communityData.filter(r => String(r.challenge_days) === communityFilter);
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="community-empty">まだ記録がないよ。<br>あなたが最初のチャレンジャーになろう！🔥</div>';
+    return;
+  }
+
+  const rankIcons = ["🥇", "🥈", "🥉"];
+  list.innerHTML = filtered.map((r, i) => {
+    const pct = Math.round((r.days_done / r.challenge_days) * 100);
+    const rank = i < 3 ? rankIcons[i] : `${i + 1}`;
+    const badge = r.is_completed ? "🏆" : "";
+    const photoHtml = r.photo_url ? `<img src="${r.photo_url}" class="community-photo" alt="写真">` : "";
+    const commentHtml = r.message ? `<div class="community-comment">「${r.message}」</div>` : "";
+    return `
+      <div class="community-card">
+        <div class="community-rank">${rank}</div>
+        <div class="community-info">
+          <div class="community-name">${escapeHtml(r.nickname)} ${badge}</div>
+          <div class="community-meta">${r.place} ／ ${r.challenge_days}日間チャレンジ ／ ${r.days_done}日完了</div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+          ${commentHtml}
+        </div>
+        ${photoHtml}
+      </div>`;
+  }).join("");
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ========== 写真・コメント送信 ========== */
+let selectedPhotoFile = null;
+
+function goToUpload() {
+  document.getElementById("upload-title").textContent = `${challengeTotalDays}日間チャレンジ達成！🎉`;
+  document.getElementById("comment-input").value = "";
+  document.getElementById("photo-preview").style.display = "none";
+  document.getElementById("upload-status").textContent = "";
+  selectedPhotoFile = null;
+  switchScreen("screen-upload");
+}
+
+function previewPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  selectedPhotoFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById("photo-preview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+    document.getElementById("photo-upload-area").querySelector(".photo-upload-icon").textContent = "✅";
+    document.getElementById("photo-upload-area").querySelector(".photo-upload-text").textContent = "写真を選択済み";
+  };
+  reader.readAsDataURL(file);
+}
+
+async function submitReport() {
+  const comment = document.getElementById("comment-input").value.trim();
+  if (!comment) { alert("ひとこと書いてね♪"); return; }
+
+  const statusEl = document.getElementById("upload-status");
+  statusEl.textContent = "送信中…";
+
+  let photoUrl = "";
+
+  if (selectedPhotoFile && sbClient) {
+    try {
+      const filename = `${challengeRecordId || Date.now()}-${Date.now()}.jpg`;
+      const { data, error } = await sbClient.storage
+        .from("challenge-photos")
+        .upload(filename, selectedPhotoFile, { upsert: true });
+      if (!error) {
+        const { data: urlData } = sbClient.storage
+          .from("challenge-photos")
+          .getPublicUrl(filename);
+        photoUrl = urlData.publicUrl;
+      }
+    } catch(e) {}
+  }
+
+  if (sbClient && challengeRecordId) {
+    try {
+      await sbClient
+        .from("challenge_records")
+        .update({ photo_url: photoUrl, message: comment, is_completed: true })
+        .eq("id", challengeRecordId);
+    } catch(e) {}
+  }
+
+  clearChallenge();
+  challengeMode = false;
+  statusEl.textContent = "";
+  celebrate(50);
+
+  alert("送れたよ！ありがとう🌸 お疲れさまでした！");
+  switchScreen("screen-top");
+}
+
+function skipUpload() {
+  clearChallenge();
+  challengeMode = false;
+  switchScreen("screen-top");
+}
+
+/* ========== 演出 ========== */
+function celebrate(count) {
+  const container = document.getElementById("confetti-container");
+  const emojis = ["🎉", "✨", "💖", "⭐️", "🌟", "🎊", "💛"];
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti-piece";
+    piece.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    piece.style.left = Math.random() * 100 + "%";
+    piece.style.fontSize = (16 + Math.random() * 18) + "px";
+    piece.style.animationDuration = (1.8 + Math.random() * 1.4) + "s";
+    piece.style.animationDelay = (Math.random() * 0.4) + "s";
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 4000);
+  }
+}
+
+function switchScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+/* ========== 初期化 ========== */
+initSupabase();
+updatePlaceBadges();
+</script>
+</body>
+</html>

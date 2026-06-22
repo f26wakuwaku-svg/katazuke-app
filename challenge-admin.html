@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>チャレンジ管理者ページ</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: #faf8f5;
+    color: #3d3530;
+    min-height: 100vh;
+  }
+
+  /* ログイン画面 */
+  .login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .login-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  .login-card h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .login-card p { font-size: 13px; color: #8c7b72; margin-bottom: 28px; }
+  .login-input {
+    width: 100%;
+    border: 2px solid #ede8e3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .login-input:focus { border-color: #d4826a; }
+  .login-btn {
+    width: 100%;
+    background: #d4826a;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .login-error { color: #e05c3a; font-size: 13px; margin-top: 8px; }
+
+  /* 管理画面 */
+  .admin-wrap { display: none; }
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid #ede8e3;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .topbar h1 { font-size: 17px; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .logout-btn {
+    background: transparent;
+    border: 1px solid #ede8e3;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: #b8a89a;
+    cursor: pointer;
+  }
+  .refresh-btn {
+    background: #d4826a;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .admin-body { max-width: 1000px; margin: 0 auto; padding: 24px 20px; }
+
+  /* サマリーカード */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .summary-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .summary-num { font-size: 32px; font-weight: 700; color: #d4826a; }
+  .summary-label { font-size: 12px; color: #8c7b72; margin-top: 4px; }
+
+  /* フィルター */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    background: #fff;
+    border: 2px solid #ede8e3;
+    border-radius: 999px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #b8a89a;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn.active { border-color: #d4826a; color: #d4826a; background: #fff5f2; }
+
+  /* 記録カード */
+  .records-list { display: flex; flex-direction: column; gap: 14px; }
+  .record-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .record-card.completed { border-left: 4px solid #d4826a; }
+  .record-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f5f1ec;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #b8a89a;
+  }
+  .record-photo img {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+    cursor: pointer;
+  }
+  .record-body { flex: 1; min-width: 0; }
+  .record-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .record-name { font-size: 16px; font-weight: 700; }
+  .record-badge {
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 2px 10px;
+    background: #f5f1ec;
+    color: #b8a89a;
+  }
+  .record-badge.done { background: #fff5f2; color: #d4826a; }
+  .record-meta { font-size: 12px; color: #b8a89a; margin-bottom: 10px; }
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .progress-bar-bg {
+    flex: 1;
+    background: #f5f1ec;
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #d4826a, #e8956b);
+    transition: width 0.5s;
+  }
+  .progress-text { font-size: 13px; font-weight: 700; color: #d4826a; white-space: nowrap; }
+  .record-comment {
+    font-size: 13px;
+    color: #3d3530;
+    background: #faf8f5;
+    border-radius: 10px;
+    padding: 10px 12px;
+    line-height: 1.7;
+    border-left: 3px solid #d4826a;
+    margin-top: 6px;
+  }
+  .record-date { font-size: 11px; color: #b8a89a; margin-top: 6px; }
+
+  .loading { text-align: center; padding: 60px; color: #b8a89a; font-size: 15px; }
+  .empty { text-align: center; padding: 60px 20px; color: #b8a89a; font-size: 14px; line-height: 1.8; }
+
+  /* 写真モーダル */
+  .photo-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .photo-modal.open { display: flex; }
+  .photo-modal img { max-width: 90vw; max-height: 90vh; border-radius: 16px; }
+  .photo-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #fff;
+    font-size: 32px;
+    cursor: pointer;
+    background: rgba(0,0,0,0.4);
+    border: none;
+    border-radius: 999px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ログイン画面 -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div style="font-size:44px; margin-bottom:12px;">🔐</div>
+    <h1>管理者ログイン</h1>
+    <p>メールアドレスとパスワードを<br>入力してください</p>
+    <input type="email" class="login-input" id="login-email" placeholder="メールアドレス">
+    <input type="password" class="login-input" id="login-password" placeholder="パスワード">
+    <button class="login-btn" onclick="login()">ログイン</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- 管理画面 -->
+<div class="admin-wrap" id="admin-wrap">
+  <div class="topbar">
+    <h1>📊 チャレンジ管理画面</h1>
+    <div class="topbar-right">
+      <button class="refresh-btn" onclick="loadRecords()">🔄 更新</button>
+      <button class="logout-btn" onclick="logout()">ログアウト</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="summary-grid" id="summary-grid">
+      <div class="summary-card"><div class="summary-num" id="s-total">—</div><div class="summary-label">参加者数</div></div>
+      <div class="summary-card"><div class="summary-num" id="s-completed">—</div><div class="summary-label">チャレンジ完了🏆</div></div>
+      <div class="summary-card"><div class="summary-num" id="s-3day">—</div><div class="summary-label">3日間チャレンジ</div></div>
+      <div class="summary-card"><div class="summary-num" id="s-5day">—</div><div class="summary-label">5日間チャレンジ</div></div>
+      <div class="summary-card"><div class="summary-num" id="s-7day">—</div><div class="summary-label">7日間チャレンジ</div></div>
+      <div class="summary-card"><div class="summary-num" id="s-photos">—</div><div class="summary-label">写真投稿数📸</div></div>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFilter('all', this)">すべて</button>
+      <button class="filter-btn" onclick="setFilter('3', this)">3日間</button>
+      <button class="filter-btn" onclick="setFilter('5', this)">5日間</button>
+      <button class="filter-btn" onclick="setFilter('7', this)">7日間</button>
+      <button class="filter-btn" onclick="setFilter('completed', this)">完了のみ</button>
+      <button class="filter-btn" onclick="setFilter('photo', this)">写真あり</button>
+    </div>
+    <div class="records-list" id="records-list">
+      <div class="loading">読み込み中…</div>
+    </div>
+  </div>
+</div>
+
+<!-- 写真モーダル -->
+<div class="photo-modal" id="photo-modal" onclick="closeModal()">
+  <button class="photo-modal-close" onclick="closeModal()">✕</button>
+  <img id="modal-img" src="" alt="写真">
+</div>
+
+<script>
+let sbClient = null;
+let allRecords = [];
+let currentFilter = "all";
+
+function initSupabase() {
+  const url = window.APP_CONFIG?.SUPABASE_URL;
+  const key = window.APP_CONFIG?.SUPABASE_ANON_KEY;
+  if (url && key) {
+    sbClient = supabase.createClient(url, key);
+    return true;
+  }
+  return false;
+}
+
+async function login() {
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  const errEl = document.getElementById("login-error");
+  errEl.textContent = "";
+
+  if (!email || !password) { errEl.textContent = "メールとパスワードを入力してください"; return; }
+  if (!sbClient) { errEl.textContent = "Supabaseの設定を確認してください"; return; }
+
+  const { error } = await sbClient.auth.signInWithPassword({ email, password });
+  if (error) {
+    errEl.textContent = "ログインできませんでした。メールとパスワードを確認してください。";
+    return;
+  }
+  showAdmin();
+}
+
+async function logout() {
+  await sbClient.auth.signOut();
+  document.getElementById("login-wrap").style.display = "flex";
+  document.getElementById("admin-wrap").style.display = "none";
+}
+
+function showAdmin() {
+  document.getElementById("login-wrap").style.display = "none";
+  document.getElementById("admin-wrap").style.display = "block";
+  loadRecords();
+}
+
+async function loadRecords() {
+  document.getElementById("records-list").innerHTML = '<div class="loading">読み込み中…</div>';
+  const { data, error } = await sbClient
+    .from("challenge_records")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    document.getElementById("records-list").innerHTML = '<div class="empty">データを取得できませんでした。</div>';
+    return;
+  }
+
+  allRecords = data || [];
+  updateSummary();
+  renderRecords();
+}
+
+function updateSummary() {
+  document.getElementById("s-total").textContent = allRecords.length;
+  document.getElementById("s-completed").textContent = allRecords.filter(r => r.is_completed).length;
+  document.getElementById("s-3day").textContent = allRecords.filter(r => r.challenge_days === 3).length;
+  document.getElementById("s-5day").textContent = allRecords.filter(r => r.challenge_days === 5).length;
+  document.getElementById("s-7day").textContent = allRecords.filter(r => r.challenge_days === 7).length;
+  document.getElementById("s-photos").textContent = allRecords.filter(r => r.photo_url).length;
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderRecords();
+}
+
+function renderRecords() {
+  let list = [...allRecords];
+
+  if (currentFilter === "3") list = list.filter(r => r.challenge_days === 3);
+  else if (currentFilter === "5") list = list.filter(r => r.challenge_days === 5);
+  else if (currentFilter === "7") list = list.filter(r => r.challenge_days === 7);
+  else if (currentFilter === "completed") list = list.filter(r => r.is_completed);
+  else if (currentFilter === "photo") list = list.filter(r => r.photo_url);
+
+  if (list.length === 0) {
+    document.getElementById("records-list").innerHTML = '<div class="empty">該当する記録がありません。</div>';
+    return;
+  }
+
+  document.getElementById("records-list").innerHTML = list.map(r => {
+    const pct = Math.round((r.days_done / r.challenge_days) * 100);
+    const dateStr = new Date(r.created_at).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" });
+    const photoHtml = r.photo_url
+      ? `<div class="record-photo"><img src="${escapeHtml(r.photo_url)}" alt="写真" onclick="openModal('${escapeHtml(r.photo_url)}')"></div>`
+      : `<div class="record-photo">📷</div>`;
+    const commentHtml = r.message
+      ? `<div class="record-comment">「${escapeHtml(r.message)}」</div>`
+      : "";
+    const completedBadge = r.is_completed
+      ? `<span class="record-badge done">🏆 完了</span>`
+      : `<span class="record-badge">進行中</span>`;
+
+    return `
+      <div class="record-card ${r.is_completed ? 'completed' : ''}">
+        ${photoHtml}
+        <div class="record-body">
+          <div class="record-header">
+            <span class="record-name">${escapeHtml(r.nickname)}</span>
+            ${completedBadge}
+          </div>
+          <div class="record-meta">${escapeHtml(r.place)} ／ ${r.challenge_days}日間チャレンジ</div>
+          <div class="progress-wrap">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width:${pct}%"></div>
+            </div>
+            <span class="progress-text">${r.days_done} / ${r.challenge_days}日</span>
+          </div>
+          ${commentHtml}
+          <div class="record-date">開始：${dateStr}</div>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function escapeHtml(str) {
+  return String(str || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function openModal(url) {
+  document.getElementById("modal-img").src = url;
+  document.getElementById("photo-modal").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("photo-modal").classList.remove("open");
+}
+
+// 初期化
+initSupabase();
+
+// すでにログイン済みか確認
+(async () => {
+  if (!sbClient) return;
+  const { data: { session } } = await sbClient.auth.getSession();
+  if (session) showAdmin();
+})();
+</script>
+</body>
+</html>
