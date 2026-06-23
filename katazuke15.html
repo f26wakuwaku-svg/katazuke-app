@@ -30,9 +30,11 @@
 
   /* ヘッダー */
   .header {
-    padding: 28px 24px 16px;
+    padding: 14px 24px 8px;
     text-align: center;
+    position: relative;
   }
+  .top-ribbon-wrap { margin-bottom: 4px; }
   .header-sub {
     font-size: 11px;
     letter-spacing: 0.12em;
@@ -40,38 +42,56 @@
     margin-bottom: 4px;
   }
   .header-title {
-    font-size: 20px;
+    font-size: 26px;
     font-weight: 700;
     color: #3d3530;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
+    line-height: 1.35;
   }
   .header-title span { color: #d4826a; }
 
   /* スクリーン */
-  .screen { display: none; flex-direction: column; flex: 1; padding: 12px 20px 32px; }
+  .screen { display: none; flex-direction: column; flex: 1; padding: 12px 20px 32px; position: relative; }
   .screen.active { display: flex; }
 
   /* トップ画面 */
-  .top-message {
+  .top-eiffel {
+    position: absolute;
+    top: -10px; right: 4px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.88;
+  }
+  .top-hero-card {
     background: #fff;
-    border-radius: 20px;
-    padding: 24px 20px;
+    border-radius: 24px;
+    padding: 16px 10px 20px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    margin-bottom: 14px;
     text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
   }
-  .top-emoji { font-size: 48px; margin-bottom: 12px; display: block; }
-  .top-message h2 {
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.6;
-    margin-bottom: 8px;
+  .top-hero-illus {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 10px;
   }
-  .top-message p {
-    font-size: 13px;
-    color: #8c7b72;
-    line-height: 1.7;
+  .top-hero-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
   }
+  .top-hero-divider::before, .top-hero-divider::after {
+    content: ''; flex: 1; height: 1px; background: #ede8e3;
+  }
+  .top-hero-heart { color: #e8a0a0; font-size: 11px; }
+  .top-hero-tagline {
+    font-size: 14px; font-weight: 700; color: #d4826a; margin-bottom: 8px;
+  }
+  .top-hero-card p { font-size: 13px; color: #8c7b72; line-height: 1.8; margin: 0; }
 
   /* 場所選択 */
   .section-label {
@@ -82,6 +102,29 @@
     margin-bottom: 12px;
     text-align: center;
   }
+  .section-label-deco {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #8c7b72;
+    margin-bottom: 14px; position: relative; z-index: 1;
+  }
+  .section-label-deco::after {
+    content: ''; position: absolute; bottom: -5px; left: 50%;
+    transform: translateX(-50%); width: 36px; height: 1.5px;
+    background: #d4826a; border-radius: 1px;
+  }
+  .top-bottom-btns {
+    display: flex; align-items: center; background: #fff;
+    border: 2px solid #ede8e3; border-radius: 999px; overflow: hidden;
+    margin-top: 8px; position: relative; z-index: 1;
+  }
+  .top-bottom-btn {
+    flex: 1; background: transparent; border: none;
+    padding: 14px 4px; font-size: 13px; font-weight: 700;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; color: #8c7b72;
+  }
+  .top-bottom-btn:active { opacity: 0.7; }
+  .top-bottom-btn.accent { color: #d4826a; }
+  .top-btn-divider { width: 1px; height: 22px; background: #ede8e3; flex-shrink: 0; }
   .place-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -615,18 +658,78 @@
 <div class="confetti-container" id="confetti-container"></div>
 
   <div class="header">
-    <div class="header-sub">頑張りすぎなくてOK ✦</div>
-    <div class="header-title">今日の<span>15分</span>、いっしょに♪</div>
+    <div class="top-ribbon-wrap">
+      <svg viewBox="0 0 56 22" width="56" height="22" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 11 Q10 5 4 7 Q5 11 4 15 Q10 17 18 11Z" fill="#fde8e4" stroke="#e0a8a0" stroke-width="1.2"/>
+        <path d="M38 11 Q46 5 52 7 Q51 11 52 15 Q46 17 38 11Z" fill="#fde8e4" stroke="#e0a8a0" stroke-width="1.2"/>
+        <ellipse cx="28" cy="11" rx="5" ry="4" fill="#fde8e4" stroke="#e0a8a0" stroke-width="1.2"/>
+        <path d="M24 13 Q20 18 16 21" stroke="#e0a8a0" stroke-width="1.2" fill="none"/>
+        <path d="M32 13 Q36 18 40 21" stroke="#e0a8a0" stroke-width="1.2" fill="none"/>
+      </svg>
+    </div>
+    <div class="header-sub">頑張りすぎなくてOK＊</div>
+    <div class="header-title">今日の<span>15分</span>、<br>いっしょに♪</div>
   </div>
 
   <!-- トップ画面 -->
   <div class="screen active" id="screen-top">
-    <div class="top-message">
-      <span class="top-emoji">☕</span>
-      <h2>完璧じゃなくていい。<br>「ごきげんな私」を目指そ♪</h2>
-      <p>1か所だけ、ちょこっとやるだけ。<br>それだけでお家の空気が変わるよ！</p>
+    <!-- エッフェル塔 -->
+    <div class="top-eiffel">
+      <svg viewBox="0 0 80 110" width="68" height="94" fill="none" stroke="#c9a99a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 100 Q20 80 28 65"/><path d="M65 100 Q60 80 52 65"/>
+        <path d="M15 100 Q17 88 28 84"/><path d="M65 100 Q63 88 52 84"/>
+        <path d="M28 84 Q40 78 52 84"/>
+        <line x1="22" y1="90" x2="58" y2="90"/>
+        <line x1="26" y1="68" x2="54" y2="68"/><line x1="24" y1="72" x2="56" y2="72"/>
+        <path d="M28 65 Q32 52 36 42"/><path d="M52 65 Q48 52 44 42"/>
+        <line x1="34" y1="46" x2="46" y2="46"/>
+        <path d="M36 42 Q38 30 40 18"/><path d="M44 42 Q42 30 40 18"/>
+        <line x1="40" y1="18" x2="40" y2="6"/>
+        <line x1="30" y1="60" x2="50" y2="60"/><line x1="33" y1="54" x2="47" y2="54"/>
+        <path d="M58 40 Q60 37 62 40 Q64 37 66 40 Q66 44 62 47 Q58 44 58 40Z" fill="#fde8e4" stroke="#e8b4a8" stroke-width="1"/>
+        <path d="M64 24 Q65.5 22 67 24 Q68.5 22 70 24 Q70 27 67 29 Q64 27 64 24Z" fill="#fde8e4" stroke="#e8b4a8" stroke-width="1"/>
+        <path d="M50 100 Q58 95 66 97"/><path d="M54 98 Q60 91 68 94"/>
+        <path d="M58 16 Q62 14 66 16" stroke-width="1"/><path d="M68 10 Q71 8 74 10" stroke-width="1"/>
+      </svg>
     </div>
-    <div class="section-label">今日はどこをやってみる？</div>
+    <!-- ヒーローカード -->
+    <div class="top-hero-card">
+      <div class="top-hero-illus">
+        <svg viewBox="0 0 44 80" width="36" height="65" fill="none" stroke="#a8c4a0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M32 76 Q24 60 22 44 Q20 28 24 12"/>
+          <path d="M28 62 Q16 55 12 44"/><ellipse cx="16" cy="50" rx="9" ry="5" transform="rotate(-30 16 50)" fill="#e0edd8"/>
+          <path d="M26 50 Q14 43 16 30"/><ellipse cx="18" cy="38" rx="8" ry="5" transform="rotate(-20 18 38)" fill="#e0edd8"/>
+          <path d="M24 38 Q18 26 22 14"/><ellipse cx="21" cy="26" rx="7" ry="4" transform="rotate(-10 21 26)" fill="#e0edd8"/>
+          <circle cx="23" cy="12" r="2.5" fill="#fde8e4" stroke="#e8b4a8"/>
+          <circle cx="28" cy="8" r="2" fill="#fde8e4" stroke="#e8b4a8"/>
+        </svg>
+        <svg viewBox="0 0 130 105" width="116" height="94" fill="none" stroke="#c9a99a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M58 28 Q55 24 58 28 Q61 24 64 28 Q64 33 61 36 Q58 33 56 30 Q58 28 58 28Z" fill="#fde8e4" stroke="#e8b4a8" stroke-width="1.2"/>
+          <path d="M52 40 Q50 34 52 28"/><path d="M64 42 Q62 36 64 30"/>
+          <ellipse cx="65" cy="88" rx="42" ry="12" fill="#fff9f7"/>
+          <ellipse cx="65" cy="88" rx="35" ry="9"/>
+          <path d="M34 63 Q32 84 65 88 Q98 84 96 63 Q96 53 65 53 Q34 53 34 63Z" fill="#fff9f7"/>
+          <ellipse cx="65" cy="63" rx="31" ry="10"/>
+          <path d="M96 66 Q108 64 106 78 Q103 88 96 83"/>
+        </svg>
+        <svg viewBox="0 0 44 80" width="36" height="65" fill="none" stroke="#a8c4a0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 76 Q20 60 22 44 Q24 28 20 12"/>
+          <path d="M16 62 Q28 55 32 44"/><ellipse cx="28" cy="50" rx="9" ry="5" transform="rotate(30 28 50)" fill="#e0edd8"/>
+          <path d="M18 50 Q30 43 28 30"/><ellipse cx="26" cy="38" rx="8" ry="5" transform="rotate(20 26 38)" fill="#e0edd8"/>
+          <path d="M20 38 Q26 26 22 14"/><ellipse cx="23" cy="26" rx="7" ry="4" transform="rotate(10 23 26)" fill="#e0edd8"/>
+          <circle cx="21" cy="12" r="2.5" fill="#fde8e4" stroke="#e8b4a8"/>
+          <circle cx="16" cy="8" r="2" fill="#fde8e4" stroke="#e8b4a8"/>
+        </svg>
+      </div>
+      <div class="top-hero-divider"><span class="top-hero-heart">♥</span></div>
+      <div class="top-hero-tagline">ごきげんな私で、毎日を好きになる♪</div>
+      <p>15分の小さな習慣が、<br>わたしの心を軽くしてくれる。<br>今日も、自分にやさしい時間を。</p>
+    </div>
+    <div class="section-label-deco">
+      <svg viewBox="0 0 20 16" width="16" height="13" fill="none" stroke="#a8c4a0" stroke-width="1.2" stroke-linecap="round"><path d="M10 14 Q6 10 2 8 Q6 6 10 8 Q14 6 16 8 Q14 10 12 12 Q10 14 10 14Z" fill="#e0edd8"/><path d="M10 14 Q10 10 10 6"/></svg>
+      今日はどこをやってみる？
+      <svg viewBox="0 0 20 16" width="16" height="13" fill="none" stroke="#a8c4a0" stroke-width="1.2" stroke-linecap="round"><path d="M10 14 Q6 10 2 8 Q6 6 10 8 Q14 6 16 8 Q14 10 12 12 Q10 14 10 14Z" fill="#e0edd8"/><path d="M10 14 Q10 10 10 6"/></svg>
+    </div>
     <div class="place-grid" id="place-grid">
       <button class="place-btn" data-place="キッチン" onclick="selectPlace(this)">
         <span class="place-level-badge"></span>
@@ -754,13 +857,10 @@
     <button class="btn-primary" id="start-btn" onclick="startTask()" style="display:none; margin-top:12px;">
       ちょっとだけやる？
     </button>
-    <div style="display:flex; gap:10px; margin-top:8px;">
-      <button class="btn-outline" onclick="goToChallenge()" style="margin-bottom:0;">
-        🔥 チャレンジモード
-      </button>
-      <button class="btn-outline" onclick="showCommunity()" style="margin-bottom:0; border-color:#b8a89a; color:#b8a89a;">
-        👥 みんなの記録
-      </button>
+    <div class="top-bottom-btns">
+      <button class="top-bottom-btn accent" onclick="goToChallenge()">🔥 チャレンジモード</button>
+      <div class="top-btn-divider"></div>
+      <button class="top-bottom-btn" onclick="showCommunity()">👥 みんなの記録</button>
     </div>
   </div>
 
