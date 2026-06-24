@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>今日の15分 片づけ</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <style>
@@ -39,8 +39,9 @@
   .header-sub {
     font-size: 11px;
     letter-spacing: 0.12em;
-    color: #b8a89a;
+    color: #9a8878;
     margin-bottom: 4px;
+    font-family: 'Shippori Mincho', serif;
   }
   .header-title {
     font-size: 40px;
@@ -48,9 +49,9 @@
     color: #7a5548;
     letter-spacing: 0.06em;
     line-height: 1.45;
-    font-family: 'Noto Serif JP', 'Georgia', 'Hiragino Mincho ProN', serif;
+    font-family: 'Shippori Mincho', 'Hiragino Mincho ProN', serif;
   }
-  .header-title span { color: #7a5548; }
+  .header-title span { color: #d4758a; }
 
   /* スクリーン */
   .screen { display: none; flex-direction: column; flex: 1; padding: 12px 26px 32px; position: relative; }
@@ -91,9 +92,13 @@
   }
   .top-hero-heart { color: #e8a0a0; font-size: 11px; }
   .top-hero-tagline {
-    font-size: 14px; font-weight: 700; color: #d4826a; margin-bottom: 8px;
+    font-size: 14px; font-weight: 700; color: #d4758a;
+    font-family: 'Shippori Mincho', serif; margin-bottom: 8px;
   }
-  .top-hero-card p { font-size: 13px; color: #8c7b72; line-height: 1.8; margin: 0; }
+  .top-hero-card p {
+    font-size: 13.5px; color: #7a5548; line-height: 1.9; margin: 0;
+    font-family: 'Shippori Mincho', serif;
+  }
 
   /* 場所選択 */
   .section-label {
@@ -106,7 +111,8 @@
   }
   .section-label-deco {
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #8c7b72;
+    font-size: 13px; font-weight: 400; letter-spacing: 0.06em; color: #7a5548;
+    font-family: 'Shippori Mincho', serif;
     margin-bottom: 14px; position: relative; z-index: 1;
   }
   .section-label-deco::after {
@@ -122,11 +128,12 @@
   }
   .top-bottom-btn {
     flex: 1; background: transparent; border: none;
-    padding: 14px 4px; font-size: 13px; font-weight: 700;
-    cursor: pointer; -webkit-tap-highlight-color: transparent; color: #8c7b72;
+    padding: 14px 4px; font-size: 13px; font-weight: 400;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; color: #7a5548;
+    font-family: 'Shippori Mincho', serif;
   }
   .top-bottom-btn:active { opacity: 0.7; }
-  .top-bottom-btn.accent { color: #d4826a; }
+  .top-bottom-btn.accent { color: #d4758a; }
   .top-btn-divider { width: 1px; height: 22px; background: #ede8e3; flex-shrink: 0; }
   .place-grid {
     display: grid;
@@ -158,7 +165,7 @@
     box-shadow: none;
     background: transparent !important;
   }
-  .place-btn .name { font-size: 12px; font-weight: 700; color: #7a5548; display: inline-block; padding-bottom: 3px; border-bottom: 2px solid #e8a0aa; margin-top: 4px; }
+  .place-btn .name { font-size: 12px; font-weight: 400; color: #7a5548; display: inline-block; padding-bottom: 3px; border-bottom: 2px solid #e8a0aa; margin-top: 4px; font-family: 'Shippori Mincho', serif; }
   .place-level-badge {
     position: absolute;
     top: 8px;
@@ -720,30 +727,41 @@
     <!-- ヒーローカード -->
     <div class="top-hero-card">
       <div class="top-hero-illus">
-        <svg viewBox="0 0 44 80" width="36" height="65" fill="none" stroke="#a8c4a0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M32 76 Q24 60 22 44 Q20 28 24 12"/>
-          <path d="M28 62 Q16 55 12 44"/><ellipse cx="16" cy="50" rx="9" ry="5" transform="rotate(-30 16 50)" fill="#e0edd8"/>
-          <path d="M26 50 Q14 43 16 30"/><ellipse cx="18" cy="38" rx="8" ry="5" transform="rotate(-20 18 38)" fill="#e0edd8"/>
-          <path d="M24 38 Q18 26 22 14"/><ellipse cx="21" cy="26" rx="7" ry="4" transform="rotate(-10 21 26)" fill="#e0edd8"/>
-          <circle cx="23" cy="12" r="2.5" fill="#fde8e4" stroke="#e8b4a8"/>
-          <circle cx="28" cy="8" r="2" fill="#fde8e4" stroke="#e8b4a8"/>
+        <svg viewBox="0 0 44 80" width="36" height="65" fill="none" stroke="#7a9a68" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M30 74 Q22 58 20 42 Q18 26 22 10"/>
+          <path d="M26 60 Q14 52 10 42"/><ellipse cx="14" cy="48" rx="9" ry="5" transform="rotate(-30 14 48)" fill="#b0c890"/>
+          <path d="M24 48 Q12 40 14 28"/><ellipse cx="16" cy="36" rx="8" ry="5" transform="rotate(-20 16 36)" fill="#b0c890"/>
+          <path d="M22 36 Q16 24 20 12"/><ellipse cx="19" cy="24" rx="7" ry="4" transform="rotate(-10 19 24)" fill="#b0c890"/>
+          <circle cx="21" cy="10" r="2.5" fill="#fde0e6" stroke="#e8a0aa" stroke-width="0.8"/>
+          <circle cx="26" cy="6" r="2" fill="#fde0e6" stroke="#e8a0aa" stroke-width="0.8"/>
         </svg>
-        <svg viewBox="0 0 130 105" width="116" height="94" fill="none" stroke="#c9a99a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M58 28 Q55 24 58 28 Q61 24 64 28 Q64 33 61 36 Q58 33 56 30 Q58 28 58 28Z" fill="#fde8e4" stroke="#e8b4a8" stroke-width="1.2"/>
-          <path d="M52 40 Q50 34 52 28"/><path d="M64 42 Q62 36 64 30"/>
-          <ellipse cx="65" cy="88" rx="42" ry="12" fill="#fff9f7"/>
-          <ellipse cx="65" cy="88" rx="35" ry="9"/>
-          <path d="M34 63 Q32 84 65 88 Q98 84 96 63 Q96 53 65 53 Q34 53 34 63Z" fill="#fff9f7"/>
-          <ellipse cx="65" cy="63" rx="31" ry="10"/>
-          <path d="M96 66 Q108 64 106 78 Q103 88 96 83"/>
+        <svg viewBox="0 0 130 100" width="116" height="89" fill="none" stroke="#9a7060" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Left steam + heart -->
+          <path d="M51 38 Q49 26 53 16" stroke-width="1.2" stroke="#b09080"/>
+          <path d="M51 38 Q48 32 44 34 Q44 40 51 46 Q58 40 58 34 Q55 32 51 38Z" fill="#e8a0aa" stroke="none"/>
+          <!-- Right steam + heart -->
+          <path d="M77 36 Q75 24 79 14" stroke-width="1.2" stroke="#b09080"/>
+          <path d="M77 36 Q74 30 70 32 Q70 38 77 44 Q84 38 84 32 Q81 30 77 36Z" fill="#e8a0aa" stroke="none"/>
+          <!-- Saucer -->
+          <ellipse cx="65" cy="86" rx="43" ry="12" fill="#f0e4d8" stroke-width="1.4"/>
+          <ellipse cx="65" cy="85" rx="35" ry="9" stroke="#b09080" stroke-width="1"/>
+          <!-- Cup body -->
+          <path d="M36 61 Q34 83 65 87 Q96 83 94 61 Q94 51 65 51 Q36 51 36 61Z" fill="#f5e8d8" stroke-width="1.4"/>
+          <!-- Tea liquid at top -->
+          <ellipse cx="65" cy="61" rx="29" ry="9" fill="#c8a878" stroke-width="1.3"/>
+          <ellipse cx="65" cy="60" rx="24" ry="7" fill="#b89868" stroke="none"/>
+          <!-- Handle -->
+          <path d="M94 65 Q110 63 108 77 Q106 87 94 83" fill="none" stroke-width="2"/>
+          <!-- Heart on cup -->
+          <path d="M65 69 Q63 63 59 65 Q58 71 65 78 Q72 71 71 65 Q67 63 65 69Z" fill="#e8a0aa" stroke="none"/>
         </svg>
-        <svg viewBox="0 0 44 80" width="36" height="65" fill="none" stroke="#a8c4a0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 76 Q20 60 22 44 Q24 28 20 12"/>
-          <path d="M16 62 Q28 55 32 44"/><ellipse cx="28" cy="50" rx="9" ry="5" transform="rotate(30 28 50)" fill="#e0edd8"/>
-          <path d="M18 50 Q30 43 28 30"/><ellipse cx="26" cy="38" rx="8" ry="5" transform="rotate(20 26 38)" fill="#e0edd8"/>
-          <path d="M20 38 Q26 26 22 14"/><ellipse cx="23" cy="26" rx="7" ry="4" transform="rotate(10 23 26)" fill="#e0edd8"/>
-          <circle cx="21" cy="12" r="2.5" fill="#fde8e4" stroke="#e8b4a8"/>
-          <circle cx="16" cy="8" r="2" fill="#fde8e4" stroke="#e8b4a8"/>
+        <svg viewBox="0 0 44 80" width="36" height="65" fill="none" stroke="#7a9a68" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 74 Q22 58 24 42 Q26 26 22 10"/>
+          <path d="M18 60 Q30 52 34 42"/><ellipse cx="30" cy="48" rx="9" ry="5" transform="rotate(30 30 48)" fill="#b0c890"/>
+          <path d="M20 48 Q32 40 30 28"/><ellipse cx="28" cy="36" rx="8" ry="5" transform="rotate(20 28 36)" fill="#b0c890"/>
+          <path d="M22 36 Q28 24 24 12"/><ellipse cx="25" cy="24" rx="7" ry="4" transform="rotate(10 25 24)" fill="#b0c890"/>
+          <circle cx="23" cy="10" r="2.5" fill="#fde0e6" stroke="#e8a0aa" stroke-width="0.8"/>
+          <circle cx="18" cy="6" r="2" fill="#fde0e6" stroke="#e8a0aa" stroke-width="0.8"/>
         </svg>
       </div>
       <div class="top-hero-divider"><span class="top-hero-heart">♥</span></div>
