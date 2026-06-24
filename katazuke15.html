@@ -662,6 +662,88 @@
   @keyframes confetti-fall {
     to { transform: translateY(110vh) rotate(360deg); opacity: 0.4; }
   }
+
+  /* ===== 全画面 Shippori Mincho デザイン統一 ===== */
+
+  /* 見出し・文章フォント */
+  .nickname-card h2, .challenge-hero h2, .community-header h2, .upload-hero h2 {
+    font-family: 'Shippori Mincho', serif; color: #7a5548;
+  }
+  .nickname-card p, .challenge-hero p, .community-header p, .upload-hero p {
+    color: #9a8878; font-family: 'Shippori Mincho', serif;
+  }
+
+  /* カード影の統一（ウォームブラウン影） */
+  .nickname-card, .challenge-hero, .task-card, .done-card,
+  .community-header, .community-card, .upload-card {
+    box-shadow: 0 4px 20px rgba(122,85,72,0.08);
+  }
+  .challenge-hero { border-radius: 24px; }
+
+  /* タスク画面 */
+  .task-text { font-family: 'Shippori Mincho', serif; color: #7a5548; font-size: 19px; }
+  .task-hint { background: #fdf5f0; color: #9a8878; }
+  .task-place-tag { color: #d4758a; background: #fff0f2; border: none; }
+
+  /* チャレンジ選択 */
+  .challenge-option-btn { border-color: #f0e4df; }
+  .challenge-option-btn.featured { border-color: #d4758a; background: #fff5f2; }
+  .challenge-days-num { color: #d4758a; font-family: 'Shippori Mincho', serif; }
+  .challenge-option-title { font-family: 'Shippori Mincho', serif; color: #7a5548; }
+  .challenge-option-desc { color: #9a8878; }
+  .challenge-option-badge { color: #d4758a; background: #fff0f2; }
+  .challenge-option-btn.featured .challenge-option-badge { background: #d4758a; color: #fff; }
+
+  /* 完了画面 */
+  .done-message { font-family: 'Shippori Mincho', serif; color: #7a5548; font-size: 16px; }
+  .done-sub { color: #9a8878; font-family: 'Shippori Mincho', serif; }
+  .done-count { color: #d4758a; }
+  .medal-badge {
+    background: linear-gradient(135deg, #fff5f0, #fde8e6);
+    border-color: #d4758a; color: #d4758a;
+  }
+  .mimi-box { border-left-color: #d4758a; background: #fff8f5; }
+  .mimi-box strong { color: #d4758a; }
+  .reward-card { border-color: #f0e4df; background: #fff8f5; }
+  .reward-label { color: #9a8878; font-family: 'Shippori Mincho', serif; }
+  .reward-text { font-family: 'Shippori Mincho', serif; color: #7a5548; }
+
+  /* ニックネーム入力 */
+  .nickname-card h2 { font-size: 20px; }
+  .nickname-input { border-color: #f0e4df; }
+  .nickname-input:focus { border-color: #d4758a; }
+
+  /* コミュニティ */
+  .community-name { font-family: 'Shippori Mincho', serif; color: #7a5548; }
+  .community-meta { color: #b8a89a; }
+  .community-tab { border-color: #f0e4df; color: #9a8878; }
+  .community-tab.active { border-color: #d4758a; color: #d4758a; background: #fff5f2; }
+  .community-comment { color: #9a8878; }
+  .progress-bar-fill { background: linear-gradient(90deg, #d4758a, #e8909a); }
+  .community-loading { color: #9a8878; }
+
+  /* アップロード・写真送信 */
+  .upload-hero {
+    background: linear-gradient(135deg, #fff5f0, #fde8e6);
+    border-color: #f0e4df;
+  }
+  .upload-label { color: #9a8878; font-family: 'Shippori Mincho', serif; letter-spacing: 0.08em; }
+  .photo-upload-area { border-color: #f0e4df; }
+  .photo-upload-area:active { border-color: #d4758a; background: #fff8f5; }
+  .photo-upload-text { color: #9a8878; font-family: 'Shippori Mincho', serif; }
+  .comment-textarea { border-color: #f0e4df; font-family: 'Shippori Mincho', serif; }
+  .comment-textarea:focus { border-color: #d4758a; }
+  .upload-status { color: #9a8878; }
+
+  /* チャレンジバー */
+  .challenge-bar { background: linear-gradient(135deg, #fff5f0, #fde8e6); }
+  .challenge-bar-title { color: #d4758a; font-family: 'Shippori Mincho', serif; }
+  .challenge-dot.done { background: #d4758a; }
+  .challenge-dot.today { border-color: #d4758a; color: #d4758a; }
+
+  /* ボタン */
+  .btn-levelup { color: #d4758a; border-color: #d4758a; }
+  .btn-levelup:active { background: #fff5f2; }
 </style>
 </head>
 <body>
@@ -972,7 +1054,14 @@
   <!-- ニックネーム入力画面 -->
   <div class="screen" id="screen-nickname">
     <div class="nickname-card">
-      <span style="font-size:44px; display:block; margin-bottom:12px;">✏️</span>
+      <svg viewBox="0 0 80 60" width="72" height="54" fill="none" stroke="#9a7060" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 16px;">
+        <path d="M12 48 L12 20 Q12 10 24 10 L56 10 Q68 10 68 20 L68 48" fill="#fde0e6" stroke-width="1.4"/>
+        <path d="M12 48 Q40 54 68 48" fill="none" stroke-width="1.4"/>
+        <line x1="26" y1="26" x2="54" y2="26" stroke-width="1.6" stroke="#c9a9a0"/>
+        <line x1="26" y1="34" x2="48" y2="34" stroke-width="1.6" stroke="#c9a9a0"/>
+        <circle cx="62" cy="38" r="8" fill="#f5bcc8" stroke-width="1.4"/>
+        <path d="M58 38 L61 41 L67 35" stroke="#e87890" stroke-width="2" fill="none"/>
+      </svg>
       <h2>ニックネームを教えて！</h2>
       <p>みんなの記録ページに<br>表示されるよ♪</p>
       <input type="text" class="nickname-input" id="nickname-input" placeholder="例：あや、もも、Kさん" maxlength="10">
@@ -983,7 +1072,16 @@
   <!-- チャレンジ選択画面 -->
   <div class="screen" id="screen-challenge-select">
     <div class="challenge-hero">
-      <span class="challenge-hero-emoji">🏆</span>
+      <svg viewBox="0 0 80 64" width="72" height="58" fill="none" stroke="#9a7060" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 12px;">
+        <path d="M20 56 L20 32 Q18 28 22 28 L58 28 Q62 28 60 32 L60 56" fill="#f5e8d8" stroke-width="1.4"/>
+        <path d="M24 28 Q40 22 56 28" fill="none" stroke-width="1.4"/>
+        <path d="M32 28 Q32 18 40 14 Q48 18 48 28" fill="none" stroke-width="1.6"/>
+        <ellipse cx="40" cy="12" rx="6" ry="5" fill="#f8e060" stroke="#c8a830" stroke-width="1.2"/>
+        <path d="M38 12 L40 9 L42 12" fill="#f8e060" stroke="#c8a830" stroke-width="1"/>
+        <line x1="40" y1="7" x2="40" y2="4" stroke="#c8a830" stroke-width="1.4"/>
+        <line x1="16" y1="56" x2="64" y2="56" stroke-width="2"/>
+        <path d="M22 56 L20 62 M58 56 L60 62" stroke-width="1.6"/>
+      </svg>
       <h2>何日間チャレンジにする？</h2>
       <p>毎日5つのタスクをこなして<br>変化を実感しよう！</p>
     </div>
@@ -1039,7 +1137,18 @@
   <!-- 完了画面 -->
   <div class="screen" id="screen-done">
     <div class="done-card">
-      <span class="done-emoji">🎉</span>
+      <svg viewBox="0 0 80 64" width="72" height="58" fill="none" stroke="#9a7060" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 8px;" class="done-emoji">
+        <ellipse cx="40" cy="50" rx="32" ry="10" fill="#f0e4d8" stroke-width="1.3"/>
+        <path d="M16 28 Q14 48 40 52 Q66 48 64 28 Q64 18 40 18 Q16 18 16 28Z" fill="#f5e0c8" stroke-width="1.4"/>
+        <ellipse cx="40" cy="28" rx="24" ry="8" fill="#c89858" stroke-width="1.3"/>
+        <ellipse cx="40" cy="27" rx="20" ry="6" fill="#b08848" stroke="none"/>
+        <path d="M64 32 Q76 30 74 42 Q72 50 64 46" fill="none" stroke-width="1.8"/>
+        <path d="M40 36 Q38 30 34 32 Q33 38 40 45 Q47 38 46 32 Q42 30 40 36Z" fill="#e8a0aa" stroke="none"/>
+        <path d="M36 22 Q34 14 38 8" stroke-width="1.2" stroke="#b09080"/>
+        <path d="M36 22 Q33 17 30 19 Q30 24 36 29 Q42 24 42 19 Q39 17 36 22Z" fill="#e8a0aa" stroke="none"/>
+        <path d="M46 20 Q44 12 48 6" stroke-width="1.2" stroke="#b09080"/>
+        <path d="M46 20 Q43 15 40 17 Q40 22 46 27 Q52 22 52 17 Q49 15 46 20Z" fill="#e8a0aa" stroke="none"/>
+      </svg>
       <div class="medal-badge" id="medal-badge">🥉 ちょこっとメダル ゲット！</div>
       <div class="done-count" id="done-count">5 <span>個できた！</span></div>
       <div class="done-message" id="done-message">今日もよくやった、私！</div>
@@ -1071,7 +1180,7 @@
   <!-- コミュニティ画面 -->
   <div class="screen" id="screen-community">
     <div class="community-header">
-      <h2>👥 みんなの記録</h2>
+      <h2>みんなの記録</h2>
       <p>一緒に頑張っている仲間の進捗だよ♪</p>
     </div>
     <div class="community-tabs">
@@ -1089,7 +1198,16 @@
   <!-- 写真・コメント送信画面 -->
   <div class="screen" id="screen-upload">
     <div class="upload-hero">
-      <span class="upload-hero-emoji">🏆</span>
+      <svg viewBox="0 0 80 60" width="68" height="51" fill="none" stroke="#9a7060" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 12px;">
+        <path d="M10 52 L10 28 Q10 18 22 18 L58 18 Q70 18 70 28 L70 52 Q40 58 10 52Z" fill="#f5e0c8" stroke-width="1.4"/>
+        <path d="M22 18 Q40 12 58 18" fill="none" stroke-width="1.4"/>
+        <path d="M32 18 Q32 8 40 4 Q48 8 48 18" fill="none" stroke-width="1.6"/>
+        <ellipse cx="40" cy="2" rx="5" ry="4" fill="#f8e060" stroke="#c8a830" stroke-width="1.2"/>
+        <path d="M38 2 L40 -1 L42 2" fill="#f8e060" stroke="#c8a830" stroke-width="1"/>
+        <path d="M40 38 Q38 32 34 34 Q33 40 40 47 Q47 40 46 34 Q42 32 40 38Z" fill="#e8a0aa" stroke="none"/>
+        <path d="M27 34 Q24 28 28 24 Q32 26 30 32" fill="#b0c890" stroke="#7a9a68" stroke-width="1"/>
+        <path d="M53 34 Q56 28 52 24 Q48 26 50 32" fill="#b0c890" stroke="#7a9a68" stroke-width="1"/>
+      </svg>
       <h2 id="upload-title">チャレンジ達成！</h2>
       <p>やり切った自分を褒めてあげて♪<br>写真とひとことを送ってね！</p>
     </div>
