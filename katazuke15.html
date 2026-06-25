@@ -335,6 +335,8 @@
     border: none;
     padding: 14px;
     font-size: 13px;
+    font-family: 'Shippori Mincho', serif;
+    letter-spacing: 0.05em;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
@@ -347,12 +349,14 @@
   .btn-outline {
     width: 100%;
     background: #fff;
-    color: #d4826a;
-    border: 2px solid #d4826a;
+    color: #d4758a;
+    border: 2px solid #e8a0b0;
     border-radius: 999px;
     padding: 16px;
     font-size: 15px;
     font-weight: 700;
+    font-family: 'Shippori Mincho', serif;
+    letter-spacing: 0.06em;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     margin-bottom: 10px;
@@ -366,8 +370,9 @@
     border-radius: 24px;
     padding: 36px 24px;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    box-shadow: 0 4px 24px rgba(122,85,72,0.10);
     margin-bottom: 20px;
+    border-top: 3px solid #e8b8c4;
   }
   .done-emoji { font-size: 64px; display: block; margin-bottom: 12px; animation: pop 0.4s ease; }
   @keyframes pop {
@@ -399,17 +404,19 @@
   .done-message { font-size: 15px; font-weight: 700; line-height: 1.7; margin-bottom: 8px; }
   .done-sub { font-size: 13px; color: #8c7b72; line-height: 1.7; margin-bottom: 24px; }
   .mimi-box {
-    background: #fff5f2;
+    background: #fff8f5;
     border-radius: 16px;
-    padding: 16px;
+    padding: 14px 16px;
     font-size: 13px;
-    color: #3d3530;
-    line-height: 1.7;
-    border-left: 3px solid #d4826a;
+    color: #7a5548;
+    line-height: 1.8;
+    border-left: 3px solid #e8a0b0;
     text-align: left;
     margin-bottom: 24px;
+    font-family: 'Shippori Mincho', serif;
+    position: relative;
   }
-  .mimi-box strong { color: #d4826a; }
+  .mimi-box strong { color: #d4758a; font-family: 'Shippori Mincho', serif; }
   .reward-label {
     font-size: 12px;
     font-weight: 700;
@@ -1218,7 +1225,7 @@
     <div class="task-card">
       <div class="task-tags">
         <span class="task-place-tag" id="task-place-tag">キッチン</span>
-        <span class="task-level-tag" id="task-level-tag">🥉 Lv.1</span>
+        <span class="task-level-tag" id="task-level-tag">Lv.1</span>
       </div>
       <span class="task-icon" id="task-icon">✨</span>
       <div class="task-text" id="task-text">タスクが入ります</div>
