@@ -511,9 +511,20 @@
     gap: 12px;
   }
   .community-rank {
-    font-size: 20px;
-    min-width: 32px;
-    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Shippori Mincho', serif;
+    color: #d4758a;
+    min-width: 28px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff0f4;
+    border: 1.5px solid #f0d0da;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
   .community-info { flex: 1; }
   .community-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
@@ -1120,7 +1131,7 @@
           <div class="challenge-option-title">3日間チャレンジ</div>
           <div class="challenge-option-desc">まずはここから♪ 気軽にスタート</div>
         </div>
-        <span class="challenge-option-badge">🥉 入門</span>
+        <span class="challenge-option-badge">入門</span>
       </button>
       <button class="challenge-option-btn" onclick="startChallenge(5)">
         <span class="challenge-days-num">5</span>
@@ -1128,15 +1139,15 @@
           <div class="challenge-option-title">5日間チャレンジ</div>
           <div class="challenge-option-desc">習慣の芽が生まれる日数！</div>
         </div>
-        <span class="challenge-option-badge">🥈 中級</span>
+        <span class="challenge-option-badge">中級</span>
       </button>
       <button class="challenge-option-btn featured" onclick="startChallenge(7)">
         <span class="challenge-days-num">7</span>
         <div class="challenge-option-info">
           <div class="challenge-option-title">7日間チャレンジ</div>
-          <div class="challenge-option-desc">本気モード！暮らしが変わる🔥</div>
+          <div class="challenge-option-desc">本気モード！暮らしが変わる♪</div>
         </div>
-        <span class="challenge-option-badge">🥇 上級</span>
+        <span class="challenge-option-badge">上級</span>
       </button>
     </div>
     <button class="btn-secondary" onclick="switchScreen('screen-top')">もどる</button>
@@ -1180,12 +1191,12 @@
       <div class="medal-badge" id="medal-badge">🥉 ちょこっとメダル ゲット！</div>
       <div class="done-count" id="done-count">5 <span>個できた！</span></div>
       <div class="done-message" id="done-message">今日もよくやった、私！</div>
-      <div class="done-sub">おつかれさまでした〜☕</div>
+      <div class="done-sub">おつかれさまでした〜♪</div>
       <div class="mimi-box" id="mimi-message">
         <strong>mimiより♪</strong><br>
         ちょっとだけでも、やった自分を褒めてあげてね。お家の空気、変わったはずだよ！
       </div>
-      <div class="reward-label">がんばった自分へ、今日のご褒美🎁</div>
+      <div class="reward-label">がんばった自分へ、今日のご褒美</div>
       <div class="reward-card">
         <div class="reward-icon" id="reward-icon">🍺</div>
         <div class="reward-text" id="reward-text">ビールでも飲んじゃおう！</div>
@@ -1200,7 +1211,7 @@
       <button class="btn-primary" id="challenge-continue-btn" onclick="continueChallenge()" style="display:none;">明日も続ける！</button>
       <button class="btn-primary" id="challenge-finish-btn" onclick="goToUpload()" style="display:none; background:linear-gradient(135deg, #d4826a, #e8956b);">チャレンジ完了！写真を送る ♪</button>
     </div>
-    <button class="btn-primary btn-levelup" id="level-up-btn" onclick="levelUp()" style="display:none;">🥈 なかなかメダルに挑戦する？</button>
+    <button class="btn-primary btn-levelup" id="level-up-btn" onclick="levelUp()" style="display:none;">なかなかメダルに挑戦する？</button>
     <button class="btn-primary" onclick="restart()">もう1か所やってみる？</button>
     <button class="btn-secondary" onclick="restart()">最初にもどる</button>
   </div>
@@ -1584,7 +1595,7 @@ function showTask() {
   const t = taskQueue[currentTaskIndex % taskQueue.length];
   const medal = medals[currentLevel];
   document.getElementById("task-place-tag").textContent = currentPlace;
-  document.getElementById("task-level-tag").textContent = `${medal.icon} Lv.${currentLevel}`;
+  document.getElementById("task-level-tag").textContent = `Lv.${currentLevel} ${medal.name}`;
   document.getElementById("task-icon").textContent = t.icon;
   document.getElementById("task-text").textContent = t.text;
   document.getElementById("task-hint").textContent = t.hint;
@@ -1626,21 +1637,21 @@ function showDone() {
   const levelUpBtn = document.getElementById("level-up-btn");
 
   if (doneCount >= 5 && currentLevel === maxLevel && maxLevel > 1) {
-    medalBadge.textContent = `${medal.icon} ${medal.name} ゲット！🏆 達人だね！`;
+    medalBadge.textContent = `${medal.name} ゲット！ 達人だね！`;
     medalBadge.classList.add("big");
     celebrate(50);
   } else if (doneCount >= 5) {
-    medalBadge.textContent = `${medal.icon} ${medal.name} ゲット！`;
+    medalBadge.textContent = `${medal.name} ゲット！`;
     medalBadge.classList.remove("big");
     celebrate(18);
   } else {
-    medalBadge.textContent = `${medal.icon} ${medal.name}`;
+    medalBadge.textContent = `${medal.name}`;
     medalBadge.classList.remove("big");
   }
 
   if (!challengeMode && doneCount >= 5 && tasks[currentPlace][nextLevel]) {
     const nextMedal = medals[nextLevel];
-    levelUpBtn.textContent = `${nextMedal.icon} ${nextMedal.name}に挑戦する？`;
+    levelUpBtn.textContent = `${nextMedal.name}に挑戦する？`;
     levelUpBtn.style.display = "block";
   } else {
     levelUpBtn.style.display = "none";
@@ -1897,15 +1908,14 @@ function renderCommunity() {
   }
 
   if (filtered.length === 0) {
-    list.innerHTML = '<div class="community-empty">まだ記録がないよ。<br>あなたが最初のチャレンジャーになろう！🔥</div>';
+    list.innerHTML = '<div class="community-empty">まだ記録がないよ。<br>あなたが最初のチャレンジャーになろう！</div>';
     return;
   }
 
-  const rankIcons = ["🥇", "🥈", "🥉"];
   list.innerHTML = filtered.map((r, i) => {
     const pct = Math.round((r.days_done / r.challenge_days) * 100);
-    const rank = i < 3 ? rankIcons[i] : `${i + 1}`;
-    const badge = r.is_completed ? "🏆" : "";
+    const rank = i + 1;
+    const badge = r.is_completed ? "✦" : "";
     const photoHtml = r.photo_url ? `<img src="${r.photo_url}" class="community-photo" alt="写真">` : "";
     const commentHtml = r.message ? `<div class="community-comment">「${r.message}」</div>` : "";
     return `
