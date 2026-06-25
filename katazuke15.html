@@ -185,13 +185,14 @@
     border-radius: 24px;
     padding: 32px 24px;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    box-shadow: 0 4px 24px rgba(122,85,72,0.10);
     margin-bottom: 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    border-top: 3px solid #f0d4da;
   }
   .task-tags { display: flex; gap: 6px; margin-bottom: 20px; }
   .task-place-tag {
@@ -214,7 +215,18 @@
     padding: 4px 14px;
     display: inline-block;
   }
-  .task-icon { font-size: 56px; margin-bottom: 16px; display: block; }
+  .task-icon {
+    font-size: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fff5f0, #fde8e6);
+    border: 2px solid #f0ddd7;
+    margin: 0 auto 18px;
+  }
   .task-text {
     font-size: 18px;
     font-weight: 700;
@@ -391,7 +403,18 @@
     margin-bottom: 12px;
     border: 2px solid #f0ddd7;
   }
-  .reward-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+  .reward-icon {
+    font-size: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fff8f2, #fde8dc);
+    border: 2px solid #f0ddd7;
+    margin: 0 auto 10px;
+  }
   .reward-text { font-size: 15px; font-weight: 700; color: #3d3530; line-height: 1.5; }
   .reward-shuffle {
     width: 100%;
@@ -1480,7 +1503,7 @@ const medals = {
 };
 
 const doneMessages = [
-  ["すごい！！やったじゃん！", "完璧じゃなくていい。\nやった自分を思いっきり褒めてね✨"],
+  ["すごい！！やったじゃん！", "完璧じゃなくていい。\nやった自分を思いっきり褒めてね♪"],
   ["おー！！できてる！！", "ちょっとやるだけで、\nお家の空気って変わるんだよね♪"],
   ["さすが！！！", "続けることより、\n今日やれたことが大事だよ！"],
 ];
