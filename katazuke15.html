@@ -13,6 +13,9 @@
   body {
     font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
     background: #f5ede8;
+    background-image:
+      radial-gradient(ellipse at 15% 20%, rgba(255,210,220,0.25) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 70%, rgba(255,230,200,0.20) 0%, transparent 55%);
     color: #3d3530;
     min-height: 100vh;
     display: flex;
@@ -116,14 +119,17 @@
   }
   .section-label-deco {
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    font-size: 13px; font-weight: 400; letter-spacing: 0.06em; color: #7a5548;
+    font-size: 13px; font-weight: 400; letter-spacing: 0.08em; color: #9a7868;
     font-family: 'Shippori Mincho', serif;
-    margin-bottom: 14px; position: relative; z-index: 1;
+    margin-bottom: 16px; position: relative; z-index: 1;
+  }
+  .section-label-deco::before {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(to right, transparent, #e0c8c0);
   }
   .section-label-deco::after {
-    content: ''; position: absolute; bottom: -5px; left: 50%;
-    transform: translateX(-50%); width: 36px; height: 1.5px;
-    background: #d4826a; border-radius: 1px;
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(to left, transparent, #e0c8c0);
   }
   .top-bottom-btns {
     display: flex; align-items: center; background: #fff;
@@ -524,8 +530,9 @@
     border-radius: 24px;
     padding: 32px 24px;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    box-shadow: 0 4px 24px rgba(122,85,72,0.09);
     margin-bottom: 20px;
+    border-top: 3px solid #f0c8d0;
   }
   .nickname-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
   .nickname-card p { font-size: 13px; color: #8c7b72; margin-bottom: 24px; line-height: 1.7; }
@@ -548,11 +555,12 @@
   /* コミュニティ画面 */
   .community-header {
     background: #fff;
-    border-radius: 20px;
+    border-radius: 24px;
     padding: 20px;
     text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 24px rgba(122,85,72,0.09);
     margin-bottom: 16px;
+    border-top: 3px solid #f0c8d0;
   }
   .community-header h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
   .community-header p { font-size: 13px; color: #8c7b72; }
@@ -750,7 +758,11 @@
   .community-header, .community-card, .upload-card {
     box-shadow: 0 4px 20px rgba(122,85,72,0.08);
   }
-  .challenge-hero { border-radius: 24px; }
+  .challenge-hero {
+    border-radius: 24px;
+    border-top: 3px solid #f0c8d0;
+    box-shadow: 0 4px 24px rgba(122,85,72,0.09);
+  }
 
   /* タスク画面 */
   .task-text { font-family: 'Shippori Mincho', serif; color: #7a5548; font-size: 19px; }
@@ -948,7 +960,7 @@
         </svg>
       </div>
       <div class="top-hero-divider"><span class="top-hero-heart">♥</span></div>
-      <div class="top-hero-tagline">ごきげんな私で、毎日を好きになる♪</div>
+      <div class="top-hero-tagline">ごきげんな私で、毎日を好きになる</div>
       <p>15分の小さな習慣が、<br>わたしの心を軽くしてくれる。<br>今日も、自分にやさしい時間を。</p>
     </div>
     <div class="section-label-deco">
