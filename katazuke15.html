@@ -618,7 +618,7 @@
     width: 100%;
     height: 100%;
   }
-  .photo-upload-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+  .photo-upload-icon { display: block; margin: 0 auto 8px; line-height: 1; }
   .photo-upload-text { font-size: 13px; color: #8c7b72; }
   .photo-preview {
     width: 100%;
@@ -1190,7 +1190,7 @@
         <div class="reward-icon" id="reward-icon">🍺</div>
         <div class="reward-text" id="reward-text">ビールでも飲んじゃおう！</div>
       </div>
-      <button class="btn-secondary reward-shuffle" onclick="shuffleReward()">🎲 他のご褒美を見る</button>
+      <button class="btn-secondary reward-shuffle" onclick="shuffleReward()">他のご褒美を見る ↻</button>
     </div>
     <div id="challenge-done-section" style="display:none;">
       <div style="background:#fff5f2; border-radius:20px; padding:20px; text-align:center; margin-bottom:16px; border:2px solid #f0ddd7;">
@@ -1198,7 +1198,7 @@
         <div class="challenge-dots" id="challenge-dots-done" style="justify-content:center;"></div>
       </div>
       <button class="btn-primary" id="challenge-continue-btn" onclick="continueChallenge()" style="display:none;">明日も続ける！</button>
-      <button class="btn-primary" id="challenge-finish-btn" onclick="goToUpload()" style="display:none; background:linear-gradient(135deg, #d4826a, #e8956b);">🏆 チャレンジ完了！写真を送る</button>
+      <button class="btn-primary" id="challenge-finish-btn" onclick="goToUpload()" style="display:none; background:linear-gradient(135deg, #d4826a, #e8956b);">チャレンジ完了！写真を送る ♪</button>
     </div>
     <button class="btn-primary btn-levelup" id="level-up-btn" onclick="levelUp()" style="display:none;">🥈 なかなかメダルに挑戦する？</button>
     <button class="btn-primary" onclick="restart()">もう1か所やってみる？</button>
@@ -1208,6 +1208,15 @@
   <!-- コミュニティ画面 -->
   <div class="screen" id="screen-community">
     <div class="community-header">
+      <svg viewBox="0 0 60 36" width="54" height="32" fill="none" stroke="#9a7060" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 10px;">
+        <circle cx="20" cy="16" r="9" fill="#fde0e6" stroke-width="1.4"/>
+        <circle cx="40" cy="16" r="9" fill="#f5e8d8" stroke-width="1.4"/>
+        <path d="M14 30 Q14 22 20 22 Q26 22 26 30" fill="none" stroke-width="1.4"/>
+        <path d="M34 30 Q34 22 40 22 Q46 22 46 30" fill="none" stroke-width="1.4"/>
+        <path d="M26 26 Q30 22 34 26" fill="none" stroke-width="1.3"/>
+        <path d="M18 14 Q20 11 22 14" fill="none" stroke="#d4758a" stroke-width="1.2"/>
+        <path d="M38 14 Q40 11 42 14" fill="none" stroke="#d4758a" stroke-width="1.2"/>
+      </svg>
       <h2>みんなの記録</h2>
       <p>一緒に頑張っている仲間の進捗だよ♪</p>
     </div>
@@ -1240,20 +1249,28 @@
       <p>やり切った自分を褒めてあげて♪<br>写真とひとことを送ってね！</p>
     </div>
     <div class="upload-card">
-      <span class="upload-label">📸 片づけ後の写真（任意）</span>
+      <span class="upload-label">片づけ後の写真（任意）</span>
       <div class="photo-upload-area" id="photo-upload-area">
         <input type="file" accept="image/*" id="photo-file-input" onchange="previewPhoto(this)">
-        <span class="photo-upload-icon">📷</span>
+        <span class="photo-upload-icon">
+          <svg viewBox="0 0 40 32" width="36" height="29" fill="none" stroke="#b8a89a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="8" width="36" height="22" rx="4" fill="#fdf5f0" stroke-width="1.4"/>
+            <path d="M14 8 L17 3 L23 3 L26 8" fill="#fde0e6" stroke-width="1.3"/>
+            <circle cx="20" cy="19" r="6" fill="#f5e8e0" stroke-width="1.4"/>
+            <circle cx="20" cy="19" r="3.5" fill="#e8d0c4" stroke="none"/>
+            <circle cx="30" cy="13" r="2" fill="#fde0e6" stroke="#d4758a" stroke-width="1"/>
+          </svg>
+        </span>
         <div class="photo-upload-text">タップして写真を選ぶ</div>
       </div>
       <img id="photo-preview" class="photo-preview" alt="プレビュー">
     </div>
     <div class="upload-card">
-      <span class="upload-label">💬 ひとこと（必須）</span>
+      <span class="upload-label">ひとこと（必須）</span>
       <textarea class="comment-textarea" id="comment-input" placeholder="チャレンジを終えての感想、変化を感じたこと、なんでもOK♪"></textarea>
     </div>
     <div class="upload-status" id="upload-status"></div>
-    <button class="btn-primary" onclick="submitReport()">送る 🌸</button>
+    <button class="btn-primary" onclick="submitReport()">送る ♪</button>
     <button class="btn-secondary" onclick="skipUpload()">今回はスキップ</button>
   </div>
 
