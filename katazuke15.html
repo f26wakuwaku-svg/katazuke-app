@@ -480,16 +480,17 @@
   .challenge-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
   .challenge-option-btn {
     background: #fff;
-    border: 2px solid #ede8e3;
+    border: 1.5px solid #f0e4df;
     border-radius: 20px;
-    padding: 20px 24px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     cursor: pointer;
     transition: all 0.2s;
     -webkit-tap-highlight-color: transparent;
     text-align: left;
+    box-shadow: 0 2px 10px rgba(122,85,72,0.06);
   }
   .challenge-option-btn:active { transform: scale(0.98); }
   .challenge-option-btn.featured { border-color: #d4826a; background: #fff5f2; }
@@ -530,15 +531,17 @@
   .nickname-card p { font-size: 13px; color: #8c7b72; margin-bottom: 24px; line-height: 1.7; }
   .nickname-input {
     width: 100%;
-    border: 2px solid #ede8e3;
+    border: 2px solid #f0e4df;
     border-radius: 16px;
     padding: 16px;
     font-size: 16px;
-    font-family: inherit;
+    font-family: 'Shippori Mincho', serif;
     outline: none;
     text-align: center;
     margin-bottom: 20px;
     transition: border-color 0.2s;
+    background: #fdf8f5;
+    color: #7a5548;
   }
   .nickname-input:focus { border-color: #d4826a; }
 
@@ -1174,15 +1177,37 @@
   <!-- チャレンジ選択画面 -->
   <div class="screen" id="screen-challenge-select">
     <div class="challenge-hero">
-      <svg viewBox="0 0 80 64" width="72" height="58" fill="none" stroke="#9a7060" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 12px;">
-        <path d="M20 56 L20 32 Q18 28 22 28 L58 28 Q62 28 60 32 L60 56" fill="#f5e8d8" stroke-width="1.4"/>
-        <path d="M24 28 Q40 22 56 28" fill="none" stroke-width="1.4"/>
-        <path d="M32 28 Q32 18 40 14 Q48 18 48 28" fill="none" stroke-width="1.6"/>
-        <ellipse cx="40" cy="12" rx="6" ry="5" fill="#f8e060" stroke="#c8a830" stroke-width="1.2"/>
-        <path d="M38 12 L40 9 L42 12" fill="#f8e060" stroke="#c8a830" stroke-width="1"/>
-        <line x1="40" y1="7" x2="40" y2="4" stroke="#c8a830" stroke-width="1.4"/>
-        <line x1="16" y1="56" x2="64" y2="56" stroke-width="2"/>
-        <path d="M22 56 L20 62 M58 56 L60 62" stroke-width="1.6"/>
+      <svg viewBox="0 0 96 72" width="88" height="66" fill="none" stroke="#9a7060" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 12px;">
+        <!-- Calendar body -->
+        <rect x="8" y="16" width="80" height="52" rx="6" fill="#fff8f5" stroke-width="1.4"/>
+        <!-- Calendar header bar -->
+        <rect x="8" y="16" width="80" height="16" rx="6" fill="#f5c8d4" stroke-width="1.4"/>
+        <rect x="8" y="24" width="80" height="8" fill="#f5c8d4" stroke="none"/>
+        <!-- Binding hooks -->
+        <line x1="28" y1="10" x2="28" y2="20" stroke="#d4758a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="68" y1="10" x2="68" y2="20" stroke="#d4758a" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Day circles row 1 -->
+        <circle cx="22" cy="38" r="6" fill="#fde0e8" stroke="#e8a0b0" stroke-width="1"/>
+        <circle cx="38" cy="38" r="6" fill="#fde0e8" stroke="#e8a0b0" stroke-width="1"/>
+        <circle cx="54" cy="38" r="6" fill="#fde0e8" stroke="#e8a0b0" stroke-width="1"/>
+        <circle cx="70" cy="38" r="6" fill="#fde0e8" stroke="#e8a0b0" stroke-width="1"/>
+        <!-- Day circles row 2 -->
+        <circle cx="22" cy="56" r="6" fill="#fde0e8" stroke="#e8a0b0" stroke-width="1"/>
+        <circle cx="38" cy="56" r="6" fill="#fde0e8" stroke="#e8a0b0" stroke-width="1"/>
+        <circle cx="54" cy="56" r="6" fill="#fde0e8" stroke="#e8a0b0" stroke-width="1"/>
+        <!-- Heart checkmarks in circles -->
+        <path d="M22 38 Q21 36 20 37 Q20 39 22 41 Q24 39 24 37 Q23 36 22 38Z" fill="#d4758a" stroke="none"/>
+        <path d="M38 38 Q37 36 36 37 Q36 39 38 41 Q40 39 40 37 Q39 36 38 38Z" fill="#d4758a" stroke="none"/>
+        <path d="M22 56 Q21 54 20 55 Q20 57 22 59 Q24 57 24 55 Q23 54 22 56Z" fill="#d4758a" stroke="none"/>
+        <!-- Star in last completed circle -->
+        <path d="M54 35 L55 37 L57 37 L55.5 38.5 L56 40.5 L54 39.5 L52 40.5 L52.5 38.5 L51 37 L53 37Z" fill="#d4758a" stroke="none"/>
+        <!-- Dotted future circles -->
+        <circle cx="70" cy="38" r="6" fill="#f5ede8" stroke="#e0c8c0" stroke-width="1" stroke-dasharray="2 1.5"/>
+        <circle cx="38" cy="56" r="6" fill="#f5ede8" stroke="#e0c8c0" stroke-width="1" stroke-dasharray="2 1.5"/>
+        <circle cx="54" cy="56" r="6" fill="#f5ede8" stroke="#e0c8c0" stroke-width="1" stroke-dasharray="2 1.5"/>
+        <!-- Small decorative stars outside -->
+        <path d="M86 12 L87 14 L89 14 L87.5 15.2 L88 17 L86 16 L84 17 L84.5 15.2 L83 14 L85 14Z" fill="#f5c8d4" stroke="none"/>
+        <circle cx="6" cy="36" r="2.5" fill="#f5c8d4" stroke="none"/>
       </svg>
       <h2>何日間チャレンジにする？</h2>
       <p>毎日5つのタスクをこなして<br>変化を実感しよう！</p>
